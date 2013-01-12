@@ -26,6 +26,13 @@ public class Demo extends EmptyVisitor {
         JavaClass javaClass = Repository.lookupClass("net.sf.plugfy.Demo");
         cpg = new ConstantPoolGen(javaClass.getConstantPool());
 
+        // TODO: handle class parents and interfaces
+        // TODO: handle class generic types
+        // TODO: handle class fields
+        // TODO: handle method parameters
+        // TODO: handle method return types
+        // TODO: handle method thrown exceptions
+
         Method[] methods = javaClass.getMethods();
         System.out.println("Methods:");
         for (Method method : methods) {
