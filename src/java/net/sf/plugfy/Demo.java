@@ -12,6 +12,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.TypedInstruction;
 
 /**
  * a proof of concept demo
@@ -75,13 +76,17 @@ public class Demo extends EmptyVisitor {
         new Demo().demo();
     }
 
-
     @Override
     public void visitInvokeInstruction(InvokeInstruction invokeInstruction) {
         System.out.println("invoke: " + invokeInstruction.getClassName(cpg) + " " + invokeInstruction.getMethodName(cpg));
         System.out.println("    Return: " + invokeInstruction.getType(cpg));
         System.out.println("    Params: " + Arrays.toString(invokeInstruction.getArgumentTypes(cpg)));
         System.out.println("    Except: " + Arrays.toString(invokeInstruction.getExceptions()));
+    }
+
+    @Override
+    public void visitTypedInstruction(TypedInstruction typedinstruction) {
+        System.out.println("type: " + typedinstruction.getType(cpg));
     }
 
 }
