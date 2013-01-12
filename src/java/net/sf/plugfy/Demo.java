@@ -1,5 +1,7 @@
 package net.sf.plugfy;
 
+import java.util.Arrays;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -75,8 +77,11 @@ public class Demo extends EmptyVisitor {
 
 
     @Override
-    public void visitInvokeInstruction(InvokeInstruction invokeinstruction) {
-        System.out.println("invoke: " + invokeinstruction.getClassName(cpg) + " " + invokeinstruction.getMethodName(cpg));
+    public void visitInvokeInstruction(InvokeInstruction invokeInstruction) {
+        System.out.println("invoke: " + invokeInstruction.getClassName(cpg) + " " + invokeInstruction.getMethodName(cpg));
+        System.out.println("    Return: " + invokeInstruction.getType(cpg));
+        System.out.println("    Params: " + Arrays.toString(invokeInstruction.getArgumentTypes(cpg)));
+        System.out.println("    Except: " + Arrays.toString(invokeInstruction.getExceptions()));
     }
 
 }
