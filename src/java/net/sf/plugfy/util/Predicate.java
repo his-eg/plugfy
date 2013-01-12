@@ -1,4 +1,4 @@
-package net.sf.plugfy;
+package net.sf.plugfy.util;
 
 /**
  * a predicate

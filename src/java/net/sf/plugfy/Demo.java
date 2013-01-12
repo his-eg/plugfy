@@ -2,6 +2,9 @@ package net.sf.plugfy;
 
 import java.util.Arrays;
 
+import net.sf.plugfy.util.Predicate;
+import net.sf.plugfy.util.Util;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
