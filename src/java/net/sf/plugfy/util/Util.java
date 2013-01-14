@@ -12,7 +12,7 @@ public class Util {
     }
 
     /**
-     * finds the first element in an array which mets a condition
+     * finds the first element in an array which meets a condition
      *
      * @param list list
      * @param predicate predicate
