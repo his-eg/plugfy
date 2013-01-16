@@ -5,13 +5,22 @@ import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import net.sf.plugfy.verifier.Verifier;
+
 /**
  * verifies a .jar file
  *
  * @author hendrik
  */
-public class JarVerifier {
+public class JarVerifier implements Verifier {
 
+    /**
+     * verifies the resource
+     *
+     * @param url resource
+     * @throws IOException in case of an input/output error
+     */
+    @Override
     public void verify(URL url) throws IOException {
         ZipInputStream zis = new ZipInputStream(url.openStream());
 
