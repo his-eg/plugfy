@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="plugfy" default="jar">
+<project name="plugfy" default="jar" xmlns:jacoco="antlib:org.jacoco.ant">
+	
+	<!-- jacoco definitions -->
+	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="lib/jacocoant.jar"/>
+    </taskdef>
 
 	<property name="build" value="build" />
 	<property name="dist" value="dist" />
@@ -83,16 +88,18 @@
 	</target>
 	
 	<target name="test" depends="compile-tests">
-		<junit printsummary="yes" haltonerror="true" fork="yes" forkmode="once">
-			<jvmarg value="-XX:MaxPermSize=512M"/>
-			<classpath refid="compile-test-classpath" />
-			<batchtest todir="${build-results}">
-				<fileset dir="${test-target}" />
-				<formatter type="plain" usefile="false" />
-				<formatter type="xml" usefile="true"/>
-			</batchtest>
-			<sysproperty key="java.library.path" value="lib" />
-		</junit>
+		<jacoco:coverage destfile="build/jacoco.exec">
+			<junit printsummary="yes" haltonerror="true" fork="yes" forkmode="once">
+				<jvmarg value="-XX:MaxPermSize=512M"/>
+				<classpath refid="compile-test-classpath" />
+				<batchtest todir="${build-results}">
+					<fileset dir="${test-target}" />
+					<formatter type="plain" usefile="false" />
+					<formatter type="xml" usefile="true"/>
+				</batchtest>
+				<sysproperty key="java.library.path" value="lib" />
+			</junit>
+		</jacoco:coverage>
 	</target>
 	
 </project>
