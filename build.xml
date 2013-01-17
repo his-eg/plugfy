@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="plugfy" default="jar">
+
+	<property name="build" value="build" />
+	<property name="dist" value="dist" />
+	<property name="target-file" value="${dist}/plugfy.jar" />
+	<property name="classes-target" value="${build}/classes" />
+	<property name="test-target" value="${build}/test" />
+	<property name="resources-target" value="${classes-target}/META-INF/resources" />
+	<property name="build-results" value="${build}/results"/>
+	
+	<path id="compile-classpath">
+		<fileset dir="lib" erroronmissingdir="false">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	
+	<path id="compile-sourcepath">
+		<dirset dir="src">
+			<include name="java" />
+		</dirset>
+	</path>
+	
+	<path id="compile-test-classpath">
+		<dirset dir="${classes-target}" />
+		<fileset dir="lib" erroronmissingdir="false">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	
+	<path id="compile-test-sourcepath">
+		<dirset dir="src">
+			<include name="test" />
+		</dirset>
+	</path>
+	
+	<target name="clean">
+		<delete failonerror="false">
+			<fileset dir="${build-results}" />
+			<fileset dir="${test-target}" />
+			<fileset dir="${classes-target}" />
+			<fileset dir="${resources-target}" />
+			<fileset dir="${build}" />
+			<fileset dir="${dist}" />
+		</delete>
+	</target>
+
+	<target name="init" depends="clean">
+		<mkdir dir="${build}" />
+		<mkdir dir="${build-results}" />
+		<mkdir dir="${test-target}" />
+		<mkdir dir="${classes-target}" />
+		<mkdir dir="${resources-target}" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="src/java" destdir="${classes-target}" debug="on" includeantruntime="false">
+			<classpath refid="compile-classpath" />
+			<sourcepath refid="compile-sourcepath" />
+		</javac>
+		<copy todir="${classes-target}" verbose="true">
+			<fileset dir="src/java">
+				<filename name="**/*.java" negate="true" />
+			</fileset>
+		</copy>
+		<copy todir="${resources-target}" failonerror="false">
+			<fileset dir="resource" />
+		</copy>
+	</target>
+
+	<target name="jar" depends="compile" description="Extension JAR für die Distribution erzeugen">
+		<jar destfile="${target-file}" basedir="${classes-target}" index="true" >
+		</jar>
+	</target>
+	
+	<target name="compile-tests" depends="compile">
+		<javac srcdir="src/test" destdir="${test-target}" debug="on" includeantruntime="false">
+			<classpath refid="compile-test-classpath" />
+			<sourcepath refid="compile-test-sourcepath" />
+		</javac>
+	</target>
+	
+	<target name="test" depends="compile-tests">
+		<junit printsummary="yes" haltonerror="true" fork="yes" forkmode="once">
+			<jvmarg value="-XX:MaxPermSize=512M"/>
+			<classpath refid="compile-test-classpath" />
+			<batchtest todir="${build-results}">
+				<fileset dir="${test-target}" />
+				<formatter type="plain" usefile="false" />
+				<formatter type="xml" usefile="true"/>
+			</batchtest>
+			<sysproperty key="java.library.path" value="lib" />
+		</junit>
+	</target>
+	
+</project>
