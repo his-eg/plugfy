@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 import net.sf.plugfy.util.Predicate;
 import net.sf.plugfy.util.Util;
+import net.sf.plugfy.verifier.VerificationResult;
 import net.sf.plugfy.verifier.container.JarVerifier;
 
 import org.apache.bcel.Repository;
@@ -99,7 +100,9 @@ public class Demo extends EmptyVisitor {
     public static void main(String[] args) throws MalformedURLException, IOException {
         String filename = "/home/brummermann/workspace/HEAD/cs.sys.configuration.center.iface/dist/cs.sys.configuration.center.iface.jar";
         System.out.println(new URLClassLoader(new URL[] {new File(filename).toURI().toURL()}).getResource("extension.beans.spring.xml"));
-        new JarVerifier().verify(new File(filename).toURI().toURL());
+        VerificationResult result = new VerificationResult();
+        new JarVerifier().verify(new File(filename).toURI().toURL(), result);
+        System.out.println(result);
     }
 
 }
