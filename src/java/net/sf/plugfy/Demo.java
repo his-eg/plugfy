@@ -3,8 +3,6 @@ package net.sf.plugfy;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Arrays;
 
 import net.sf.plugfy.util.Predicate;
@@ -98,8 +96,7 @@ public class Demo extends EmptyVisitor {
      * @throws MalformedURLException
      */
     public static void main(final String[] args) throws MalformedURLException, IOException {
-        final String filename = "/home/keunecke/tomcat_head/workspace/cs.sys.configuration.center.iface/dist/cs.sys.configuration.center.iface.jar";
-        System.out.println(new URLClassLoader(new URL[] {new File(filename).toURI().toURL()}).getResource("extension.beans.spring.xml"));
+        final String filename = "sample/sample.jar";
         final VerificationResult result = new VerificationResult();
         new JarVerifier().verify(new File(filename).toURI().toURL(), result);
         System.out.println(result);

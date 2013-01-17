@@ -5,8 +5,8 @@ import java.io.IOException;
 import net.sf.plugfy.verifier.VerificationResult;
 import net.sf.plugfy.verifier.Verifier;
 
+import org.apache.bcel.classfile.DescendingVisitor;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.util.ClassLoaderRepository;
 
 /**
@@ -15,7 +15,6 @@ import org.apache.bcel.util.ClassLoaderRepository;
  * @author brummermann
  */
 public class ClassVerifier implements Verifier {
-    private ConstantPoolGen cpg;
 
     /**
      * verifies the resource
@@ -34,16 +33,8 @@ public class ClassVerifier implements Verifier {
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }
-        javaClass.accept(new ClassVisitor());
-        cpg = new ConstantPoolGen(javaClass.getConstantPool());
-
-        // TODO: handle class parents and interfaces
-        // TODO: handle class generic types
-        // TODO: handle class fields
-        // TODO: handle method parameters
-        // TODO: handle method return types
-        // TODO: handle method thrown exceptions
-
+        DescendingVisitor descendingVisitor = new DescendingVisitor(javaClass, new ClassVisitor(result));
+        descendingVisitor.visit();
     }
 
 }
