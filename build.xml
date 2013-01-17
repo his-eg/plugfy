@@ -23,6 +23,7 @@
 	
 	<path id="compile-test-classpath">
 		<dirset dir="${classes-target}" />
+		<dirset dir="${test-target}" />
 		<fileset dir="lib" erroronmissingdir="false">
 			<include name="*.jar" />
 		</fileset>
