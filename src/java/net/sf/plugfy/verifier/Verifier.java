@@ -1,7 +1,6 @@
 package net.sf.plugfy.verifier;
 
 import java.io.IOException;
-import java.net.URL;
 
 /**
  * interface for verifier
@@ -13,9 +12,10 @@ public interface Verifier {
     /**
      * verifies the resource
      *
-     * @param url resource
+     * @param classLoader classLoader
+     * @param name filename
      * @throws IOException in case of an input/output error
      */
-    public void verify(URL url) throws IOException;
+    public void verify(ClassLoader classLoader, String name) throws IOException;
 
 }

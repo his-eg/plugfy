@@ -1,9 +1,15 @@
 package net.sf.plugfy;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 
 import net.sf.plugfy.util.Predicate;
 import net.sf.plugfy.util.Util;
+import net.sf.plugfy.verifier.container.JarVerifier;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -69,16 +75,6 @@ public class Demo extends EmptyVisitor {
             handle = handle.getNext();
         }
     }
-
-    /**
-     * executes the demo
-     *
-     * @param args ignored
-     */
-    public static void main(String[] args) {
-        new Demo().demo();
-    }
-
     @Override
     public void visitInvokeInstruction(InvokeInstruction invokeInstruction) {
         System.out.println("invoke: " + invokeInstruction.getClassName(cpg) + " " + invokeInstruction.getMethodName(cpg));
@@ -90,6 +86,20 @@ public class Demo extends EmptyVisitor {
     @Override
     public void visitTypedInstruction(TypedInstruction typedinstruction) {
         System.out.println("type: " + typedinstruction.getType(cpg));
+    }
+
+
+    /**
+     * executes the demo
+     *
+     * @param args ignored
+     * @throws IOException
+     * @throws MalformedURLException
+     */
+    public static void main(String[] args) throws MalformedURLException, IOException {
+        String filename = "/home/brummermann/workspace/HEAD/cs.sys.configuration.center.iface/dist/cs.sys.configuration.center.iface.jar";
+        System.out.println(new URLClassLoader(new URL[] {new File(filename).toURI().toURL()}).getResource("extension.beans.spring.xml"));
+        new JarVerifier().verify(new File(filename).toURI().toURL());
     }
 
 }
