@@ -3,6 +3,7 @@ package net.sf.plugfy.verifier;
 import java.util.Locale;
 
 import net.sf.plugfy.verifier.container.JarVerifier;
+import net.sf.plugfy.verifier.java.ClassVerifier;
 
 /**
  * factory for verifiers
@@ -21,6 +22,8 @@ public class VerifierFactory {
         String lower = filename.toLowerCase(Locale.ENGLISH);
         if (lower.endsWith(".zip") || lower.endsWith(".jar")) {
             return new JarVerifier();
+        } else if (lower.endsWith(".class")) {
+            return new ClassVerifier();
         }
 
         // if there is no verifier, return a dummy one instead of null
