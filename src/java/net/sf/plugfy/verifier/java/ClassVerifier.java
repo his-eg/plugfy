@@ -5,7 +5,6 @@ import java.io.IOException;
 import net.sf.plugfy.verifier.Verifier;
 
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.util.ClassLoaderRepository;
 
@@ -33,6 +32,7 @@ public class ClassVerifier implements Verifier {
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }
+        javaClass.accept(new ClassVisitor());
         cpg = new ConstantPoolGen(javaClass.getConstantPool());
 
         // TODO: handle class parents and interfaces
@@ -42,11 +42,6 @@ public class ClassVerifier implements Verifier {
         // TODO: handle method return types
         // TODO: handle method thrown exceptions
 
-        Method[] methods = javaClass.getMethods();
-        System.out.println("Methods:");
-        for (Method method : methods) {
-            System.out.println(method);
-        }
     }
 
 }
