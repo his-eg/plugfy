@@ -51,7 +51,7 @@
 		</delete>
 	</target>
 
-	<target name="init" depends="clean">
+	<target name="init">
 		<mkdir dir="${build}" />
 		<mkdir dir="${build-results}" />
 		<mkdir dir="${test-target}" />
