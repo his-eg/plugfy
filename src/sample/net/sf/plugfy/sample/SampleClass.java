@@ -39,4 +39,8 @@ public class SampleClass<T extends SampleClassTypeParameter> extends SampleParen
 
         return null;
     }
+
+    public class SampleInner extends SampleInnerParent<SampleInnerParameter> {
+        // empty
+    }
 }

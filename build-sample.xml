@@ -23,7 +23,7 @@
 	<target name="jar" depends="compile" description="Sample Jar">
 		<jar destfile="${dist}/sample.jar" index="true" >
 			<fileset dir="${build}/classes-sample">
-				<include name="net/sf/plugfy/sample/SampleClass.class" />
+				<include name="net/sf/plugfy/sample/SampleClass*.class" />
 			</fileset>
 		</jar>
 	</target>
