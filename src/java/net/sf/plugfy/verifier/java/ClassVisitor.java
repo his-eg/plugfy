@@ -2,7 +2,7 @@ package net.sf.plugfy.verifier.java;
 
 import java.util.Arrays;
 
-import net.sf.plugfy.verifier.VerificationResult;
+import net.sf.plugfy.verifier.VerificationContext;
 
 import org.apache.bcel.classfile.EmptyVisitor;
 import org.apache.bcel.classfile.Field;
@@ -21,15 +21,15 @@ import org.apache.bcel.generic.ConstantPoolGen;
 public class ClassVisitor extends EmptyVisitor {
     private JavaClass javaClass;
     private ConstantPoolGen constantPoolGen;
-    private final VerificationResult result;
+    private final VerificationContext context;
 
     /**
      * ClassVisitor logs missing dependencies
      *
-     * @param result result collector
+     * @param context context
      */
-    public ClassVisitor(VerificationResult result) {
-        this.result = result;
+    public ClassVisitor(VerificationContext context) {
+        this.context = context;
     }
 
     @Override

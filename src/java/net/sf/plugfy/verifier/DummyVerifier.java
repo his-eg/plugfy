@@ -14,11 +14,11 @@ public class DummyVerifier implements Verifier {
      *
      * @param classLoader classLoader
      * @param name filename
-     * @param result result of the verification
+     * @param context verification context
      * @throws IOException in case of an input/output error
      */
     @Override
-    public void verify(ClassLoader classLoader, String name, VerificationResult result) throws IOException {
+    public void verify(ClassLoader classLoader, String name, VerificationContext context) throws IOException {
         // everything is fine
     }
 

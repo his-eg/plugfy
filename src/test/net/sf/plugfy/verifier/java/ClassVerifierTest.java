@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import net.sf.plugfy.verifier.VerificationResult;
+import net.sf.plugfy.verifier.VerificationContext;
 
+import org.apache.bcel.util.ClassLoaderRepository;
 import org.junit.Test;
 
 /**
@@ -23,11 +24,17 @@ public class ClassVerifierTest {
      */
     @Test
     public void test() throws IOException {
-        VerificationResult result = new VerificationResult();
         URL url = new File("sample/sample.jar").toURI().toURL();
         ClassLoader classLoader = new URLClassLoader(new URL[] {url});
-        new ClassVerifier().verify(classLoader, "net.sf.plugfy.sample.SampleClass", result);
-        System.out.println(result);
+        VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader));
+        new ClassVerifier().verify(classLoader, "net.sf.plugfy.sample.SampleClass", context);
+        System.out.println(context.getResult());
+
+        System.out.println("-------------------");
+
+        context = new VerificationContext(new ClassLoaderRepository(classLoader));
+        new ClassVerifier().verify(classLoader, "net.sf.plugfy.sample.SampleClass$SampleInner", context);
+        System.out.println(context.getResult());
 
     }
 

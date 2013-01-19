@@ -3,11 +3,13 @@ package net.sf.plugfy;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 
 import net.sf.plugfy.util.Predicate;
 import net.sf.plugfy.util.Util;
-import net.sf.plugfy.verifier.VerificationResult;
+import net.sf.plugfy.verifier.VerificationContext;
 import net.sf.plugfy.verifier.container.JarVerifier;
 
 import org.apache.bcel.Repository;
@@ -21,6 +23,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.TypedInstruction;
+import org.apache.bcel.util.ClassLoaderRepository;
 
 /**
  * a proof of concept demo
@@ -97,9 +100,11 @@ public class Demo extends EmptyVisitor {
      */
     public static void main(final String[] args) throws MalformedURLException, IOException {
         final String filename = "sample/sample.jar";
-        final VerificationResult result = new VerificationResult();
-        new JarVerifier().verify(new File(filename).toURI().toURL(), result);
-        System.out.println(result);
+        URL url = new File("sample/sample.jar").toURI().toURL();
+        ClassLoader classLoader = new URLClassLoader(new URL[] {url});
+        VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader));
+        new JarVerifier().verify(new File(filename).toURI().toURL(), context);
+        System.out.println(context);
     }
 
 }
