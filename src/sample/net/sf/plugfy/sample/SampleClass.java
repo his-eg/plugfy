@@ -8,9 +8,12 @@ package net.sf.plugfy.sample;
  */
 public class SampleClass<T extends SampleClassTypeParameter> extends SampleParent<SampleParentClassTypeParameter> implements SampleIface {
 
-    private final static SampleStaticField staticField = new SampleStaticFieldInstance();
-    private final SampleField field = new SampleFieldInstance();
+    private final static SampleStaticField<SampleStaticFieldParameter> staticField = new SampleStaticFieldInstance();
+    private final SampleField<SampleFieldParameter> field = new SampleFieldInstance();
     private static SampleField field2;
+    private final int intField = 0;
+    private final int[] intArrayField = new int[0];
+    private final SampleArrayField[] arrayField = new SampleArrayField[0];
 
     static {
         field2 = new SampleStaticBlockFieldInstance();

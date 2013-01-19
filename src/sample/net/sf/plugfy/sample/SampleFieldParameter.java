@@ -1,11 +1,10 @@
 package net.sf.plugfy.sample;
 
 /**
- * a sample field type
+ * a sample field parameter
  *
  * @author hendrik
- * @param <T> type
  */
-public class SampleField<T> {
+public class SampleFieldParameter {
     // empty
 }
