@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="plugfy" default="jar">
+
+	<property name="build" value="build" />
+	<property name="dist" value="sample" />
+	
+	<target name="clean">
+		<delete failonerror="false">
+			<fileset dir="${build}/classes-sample" />
+		</delete>
+	</target>
+
+	<target name="init">
+		<mkdir dir="${build}" />
+		<mkdir dir="${build}/classes-sample" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="src/sample" destdir="${build}/classes-sample" debug="on" includeantruntime="false" />
+	</target>
+
+	<target name="jar" depends="compile" description="Sample Jar">
+		<jar destfile="${dist}/sample.jar" index="true" >
+			<fileset dir="${build}/classes-sample">
+				<include name="net/sf/plugfy/sample/SampleClass.class" />
+			</fileset>
+		</jar>
+	</target>
+</project>
