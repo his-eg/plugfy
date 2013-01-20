@@ -11,6 +11,9 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * verifies a java class
@@ -21,6 +24,7 @@ public class ClassVerifier implements Verifier {
     private VerificationContext context;
     private JavaClass javaClass;
     private ConstantPoolGen cpg;
+    private ClassVisitor visitor;
 
     /**
      * verifies the resource
@@ -39,8 +43,7 @@ public class ClassVerifier implements Verifier {
             throw new IOException(e);
         }
         cpg = new ConstantPoolGen(javaClass.getConstantPool());
-//        DescendingVisitor descendingVisitor = new DescendingVisitor(javaClass, new ClassVisitor(context));
-//        descendingVisitor.visit();
+        visitor = new ClassVisitor(cpg, verificationContext);
 
         analyzeClassSignature();
         analyzeFields();
@@ -98,6 +101,14 @@ public class ClassVerifier implements Verifier {
                 SignatureUtil.checkSignatureDependencies(context.getRepository(), context.getResult(), localVariable.getSignature());
             }
         }
-    }
 
+        // check code
+        final MethodGen mg = new MethodGen(method, javaClass.getClassName(), this.cpg);
+        InstructionHandle handle = mg.getInstructionList().getStart();
+        while (handle != null) {
+            final Instruction instruction = handle.getInstruction();
+            instruction.accept(visitor);
+            handle = handle.getNext();
+        }
+    }
 }
