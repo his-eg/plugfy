@@ -7,6 +7,8 @@ import net.sf.plugfy.verifier.Verifier;
 
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 
@@ -85,7 +87,17 @@ public class ClassVerifier implements Verifier {
      * @param method method
      */
     private void analyzeMethod(Method method) {
+
+        // check real and generic signature of the method
         SignatureUtil.checkSignatureDependencies(context.getRepository(), context.getResult(), method);
+
+        // check types of variables
+        LocalVariableTable localVariableTable = method.getLocalVariableTable();
+        if (localVariableTable != null) {
+            for (LocalVariable localVariable : localVariableTable.getLocalVariableTable()) {
+                SignatureUtil.checkSignatureDependencies(context.getRepository(), context.getResult(), localVariable.getSignature());
+            }
+        }
     }
 
 }
