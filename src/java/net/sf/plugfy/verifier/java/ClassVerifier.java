@@ -13,6 +13,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 
 /**
@@ -104,11 +105,14 @@ public class ClassVerifier implements Verifier {
 
         // check code
         final MethodGen mg = new MethodGen(method, javaClass.getClassName(), this.cpg);
-        InstructionHandle handle = mg.getInstructionList().getStart();
-        while (handle != null) {
-            final Instruction instruction = handle.getInstruction();
-            instruction.accept(visitor);
-            handle = handle.getNext();
+        InstructionList instructionList = mg.getInstructionList();
+        if (instructionList != null) {
+            InstructionHandle handle = instructionList.getStart();
+            while (handle != null) {
+                final Instruction instruction = handle.getInstruction();
+                instruction.accept(visitor);
+                handle = handle.getNext();
+            }
         }
     }
 }
