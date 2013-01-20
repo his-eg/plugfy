@@ -9,12 +9,10 @@ import java.util.Arrays;
 
 import net.sf.plugfy.util.Predicate;
 import net.sf.plugfy.util.Util;
-import net.sf.plugfy.verifier.VerificationContext;
-import net.sf.plugfy.verifier.container.JarVerifier;
 
-import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.EmptyVisitor;
@@ -22,8 +20,10 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
 import org.apache.bcel.util.ClassLoaderRepository;
+import org.apache.bcel.util.Repository;
 
 /**
  * a proof of concept demo
@@ -35,9 +35,10 @@ public class Demo extends EmptyVisitor {
 
     /**
      * demo
+     * @throws ClassNotFoundException
      */
-    public void demo() {
-        final JavaClass javaClass = Repository.lookupClass("net.sf.plugfy.Demo");
+    public void demo(Repository repository) throws ClassNotFoundException {
+        final JavaClass javaClass = repository.loadClass("net.sf.plugfy.sample.SampleClass");
         this.cpg = new ConstantPoolGen(javaClass.getConstantPool());
 
         // TODO: handle class parents and interfaces
@@ -56,7 +57,7 @@ public class Demo extends EmptyVisitor {
 
             @Override
             public boolean apply(final Method input) {
-                return input.getName().equals("demo");
+                return input.getName().equals("method");
             }
         });
         System.out.println("-----------------------");
@@ -76,10 +77,18 @@ public class Demo extends EmptyVisitor {
             instruction.accept(this);
             handle = handle.getNext();
         }
+
+        System.out.println(mg.getInstructionList());
+        System.out.println("-----------------------");
+
+        for (LocalVariable localVariable : method.getLocalVariableTable().getLocalVariableTable()) {
+            System.out.println(localVariable.getName() + " / " + localVariable.getSignature() + " / " + Type.getType(localVariable.getSignature()));
+        }
     }
+
     @Override
     public void visitInvokeInstruction(final InvokeInstruction invokeInstruction) {
-        System.out.println("invoke: " + invokeInstruction.getClassName(this.cpg) + " " + invokeInstruction.getMethodName(this.cpg));
+        System.out.println("invoke: " + invokeInstruction.getReferenceType(this.cpg) + " " + invokeInstruction.getMethodName(this.cpg));
         System.out.println("    Return: " + invokeInstruction.getType(this.cpg));
         System.out.println("    Params: " + Arrays.toString(invokeInstruction.getArgumentTypes(this.cpg)));
         System.out.println("    Except: " + Arrays.toString(invokeInstruction.getExceptions()));
@@ -97,14 +106,19 @@ public class Demo extends EmptyVisitor {
      * @param args ignored
      * @throws IOException
      * @throws MalformedURLException
+     * @throws ClassNotFoundException
      */
-    public static void main(final String[] args) throws MalformedURLException, IOException {
+    public static void main(final String[] args) throws MalformedURLException, IOException, ClassNotFoundException {
         final String filename = "sample/sample.jar";
         URL url = new File("sample/sample.jar").toURI().toURL();
         ClassLoader classLoader = new URLClassLoader(new URL[] {url});
+
+        new Demo().demo(new ClassLoaderRepository(classLoader));
+
+        /*
         VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader));
         new JarVerifier().verify(new File(filename).toURI().toURL(), context);
-        System.out.println(context);
-    }
+        System.out.println(context);*/
 
+    }
 }
