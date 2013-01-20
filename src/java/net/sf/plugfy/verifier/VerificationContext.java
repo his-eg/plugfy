@@ -12,7 +12,7 @@ public class VerificationContext {
 
     private final VerificationResult result = new VerificationResult();
 
-    private final Repository repository;
+    private Repository repository;
 
     /**
      * VerificationContext
@@ -35,6 +35,13 @@ public class VerificationContext {
      */
     public Repository getRepository() {
         return repository;
+    }
+
+    /**
+     * @param repository Repository
+     */
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
     @Override

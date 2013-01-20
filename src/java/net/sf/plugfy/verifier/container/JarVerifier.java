@@ -10,6 +10,9 @@ import net.sf.plugfy.verifier.VerificationContext;
 import net.sf.plugfy.verifier.Verifier;
 import net.sf.plugfy.verifier.VerifierFactory;
 
+import org.apache.bcel.util.ClassLoaderRepository;
+import org.apache.bcel.util.Repository;
+
 /**
  * verifies a .jar file
  *
@@ -39,7 +42,10 @@ public class JarVerifier implements Verifier {
      * @throws IOException in case of an input/output error
      */
     public void verify(URL url, VerificationContext context) throws IOException {
-        ClassLoader subClassLoader = new URLClassLoader(new URL[] {url});
+        ClassLoader subClassLoader = new URLClassLoader(new URL[] {url}, this.getClass().getClassLoader());
+        Repository old = context.getRepository();
+        context.setRepository(new ClassLoaderRepository(subClassLoader));
+
         ZipInputStream zis = new ZipInputStream(url.openStream());
 
         try {
@@ -55,5 +61,6 @@ public class JarVerifier implements Verifier {
         } finally {
             zis.close();
         }
+        context.setRepository(old);
     }
 }
