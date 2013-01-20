@@ -2,6 +2,9 @@ package net.sf.plugfy.verifier.java;
 
 import net.sf.plugfy.verifier.VerificationResult;
 
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.FieldOrMethod;
+import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.util.Repository;
 
 /**
@@ -14,6 +17,25 @@ class SignatureUtil {
     enum State {
         WAITING_FOR_TYPE_START,
         WAITING_FOR_TYPE_END;
+    }
+
+    /**
+     * checks the dependencies for a signature
+     *
+     * @param repository repository
+     * @param result VerificationResult
+     * @param entity method or field
+     */
+    public static void checkSignatureDependencies(Repository repository, VerificationResult result, FieldOrMethod entity) {
+
+        // check method signature. And check extended signature without erased types, if defined.
+        SignatureUtil.checkSignatureDependencies(repository, result, entity.getSignature());
+        for (Attribute attribute : entity.getAttributes()) {
+            if (attribute instanceof Signature) {
+                Signature sig = (Signature) attribute;
+                SignatureUtil.checkSignatureDependencies(repository, result, sig.getSignature());
+            }
+        }
     }
 
 
@@ -55,11 +77,5 @@ class SignatureUtil {
                 }
             }
         }
-//        Lnet/sf/plugfy/sample/SampleStaticField<Lnet/sf/plugfy/sample/SampleStaticFieldParameter;>;
-//        I
-//        [I
-//        (Lnet/sf/plugfy/sample/SampleMethodParameter<Lnet/sf/plugfy/sample/SampleMethodParameterType;>;ILjava/lang/String;)Lnet/sf/plugfy/sample/SampleReturn<Lnet/sf/plugfy/sample/SampleMethodReturnType;>;
-//        Lnet/sf/plugfy/sample/SampleMethodParameter<Lnet/sf/plugfy/sample/SampleMethodParameterType;>;ILjava/lang/String;
-//        Lnet/sf/plugfy/sample/SampleReturn<Lnet/sf/plugfy/sample/SampleMethodReturnType;>;
     }
 }

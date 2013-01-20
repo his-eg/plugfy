@@ -1,19 +1,14 @@
 package net.sf.plugfy.verifier.java;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import net.sf.plugfy.verifier.VerificationContext;
 import net.sf.plugfy.verifier.Verifier;
 
-import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.Signature;
-import org.apache.bcel.classfile.Utility;
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.Type;
 
 /**
  * verifies a java class
@@ -72,7 +67,7 @@ public class ClassVerifier implements Verifier {
      * @param field field
      */
     private void analyzeField(Field field) {
-        System.out.println("Field: " + field.getSignature() + "_/// " + Type.getType(field.getSignature()));
+        SignatureUtil.checkSignatureDependencies(context.getRepository(), context.getResult(), field);
     }
 
     /**
@@ -90,25 +85,7 @@ public class ClassVerifier implements Verifier {
      * @param method method
      */
     private void analyzeMethod(Method method) {
-        System.out.println("Method: " + method.getName());
-        System.out.println("   Sig: " + method);
-        System.out.println("   S2:  " + Utility.methodSignatureToString(method.getSignature(), method.getName(),  Utility.accessToString(method.getAccessFlags()), true, method.getLocalVariableTable()));
-        System.out.println("      " + method.getSignature());
-        System.out.println("   <- " + method.getReturnType());
-        System.out.println("      " + Arrays.asList(method.getArgumentTypes()));
-
-        for (Attribute attribute : method.getAttributes()) {
-            if (attribute instanceof Signature) {
-                Signature sig = (Signature) attribute;
-                System.out.println("         A: " + sig.getSignature());
-                System.out.println("_____" + Type.getReturnType(sig.getSignature()));
-                // System.out.println("_____" + Type.getArgumentTypes(sig.getSignature()));
-            }
-        }
-
-        for (Type type : method.getArgumentTypes()) {
-            System.out.println("              type: " + type + " //// " + type.getSignature());
-        }
+        SignatureUtil.checkSignatureDependencies(context.getRepository(), context.getResult(), method);
     }
 
 }
