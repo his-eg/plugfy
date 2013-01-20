@@ -4,6 +4,7 @@ import net.sf.plugfy.verifier.VerificationResult;
 
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.FieldOrMethod;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.util.Repository;
 
@@ -30,6 +31,24 @@ class SignatureUtil {
 
         // check method signature. And check extended signature without erased types, if defined.
         SignatureUtil.checkSignatureDependencies(repository, result, entity.getSignature());
+        for (Attribute attribute : entity.getAttributes()) {
+            if (attribute instanceof Signature) {
+                Signature sig = (Signature) attribute;
+                SignatureUtil.checkSignatureDependencies(repository, result, sig.getSignature());
+            }
+        }
+    }
+
+    /**
+     * checks the dependencies for a signature
+     *
+     * @param repository repository
+     * @param result VerificationResult
+     * @param entity method or field
+     */
+    public static void checkSignatureDependencies(Repository repository, VerificationResult result, JavaClass entity) {
+
+        // check method signature. And check extended signature without erased types, if defined.
         for (Attribute attribute : entity.getAttributes()) {
             if (attribute instanceof Signature) {
                 Signature sig = (Signature) attribute;

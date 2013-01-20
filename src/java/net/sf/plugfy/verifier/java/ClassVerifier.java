@@ -49,7 +49,7 @@ public class ClassVerifier implements Verifier {
      * analyze the class signature
      */
     private void analyzeClassSignature() {
-        // TODO Auto-generated method stub
+        SignatureUtil.checkSignatureDependencies(context.getRepository(), context.getResult(), javaClass);
     }
 
     /**
