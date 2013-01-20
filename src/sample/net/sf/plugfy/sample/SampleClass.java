@@ -1,5 +1,8 @@
 package net.sf.plugfy.sample;
 
+import java.util.List;
+import java.util.LinkedList;
+
 /**
  * a sample class
  *
@@ -14,6 +17,7 @@ public class SampleClass<T extends SampleClassTypeParameter> extends SampleParen
     private final int intField = 0;
     private final int[] intArrayField = new int[0];
     private final SampleArrayField[] arrayField = new SampleArrayField[0];
+    private final List<Double> list = new LinkedList<Double>();
 
     static {
         field2 = new SampleStaticBlockFieldInstance();
@@ -26,7 +30,7 @@ public class SampleClass<T extends SampleClassTypeParameter> extends SampleParen
      * @param param1 a parameter
      * @return a return value
      */
-    public SampleReturn<SampleMethodReturnType> method(SampleMethodParameter<SampleMethodParameterType> param1) {
+    public SampleReturn<SampleMethodReturnType> method(SampleMethodParameter<SampleMethodParameterType> param1, int param2, String param3) {
 
         SampleLocalVariable<SampleLocalVariableType> temp = new SampleLocalVariableInstance<SampleLocalVariableType>();
 
