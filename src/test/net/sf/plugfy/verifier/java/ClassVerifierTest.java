@@ -26,16 +26,15 @@ public class ClassVerifierTest {
     public void test() throws IOException {
         URL url = new File("sample/sample.jar").toURI().toURL();
         ClassLoader classLoader = new URLClassLoader(new URL[] {url});
-        VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader));
+        VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader);
         new ClassVerifier().verify(classLoader, "net.sf.plugfy.sample.SampleClass", context);
         System.out.println(context.getResult());
 
         System.out.println("-------------------");
 
-        context = new VerificationContext(new ClassLoaderRepository(classLoader));
+        context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader);
         new ClassVerifier().verify(classLoader, "net.sf.plugfy.sample.SampleClass$SampleInner", context);
         System.out.println(context.getResult());
-
     }
 
 }

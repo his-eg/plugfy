@@ -20,6 +20,9 @@ public class Main {
      * @throws IOException in case of an input/output error
      */
     public static void main(String[] args) throws IOException {
+
+        long start = System.currentTimeMillis();
+
         if (args.length != 1) {
             System.err.println("Please provide the name of the .jar file to analyse as parameter.");
             System.exit(1);
@@ -30,9 +33,15 @@ public class Main {
             // TODO
         } else {
             URL url = file.toURI().toURL();
-            VerificationContext context = new VerificationContext(null);
+            VerificationContext context = new VerificationContext(null, null);
             new JarVerifier().verify(url, context);
-            System.out.println(context);
+            System.out.println("---------------------------------");
+            for (String entry : context.getResult()) {
+                System.out.println(entry);
+            }
         }
+
+        System.out.println("Duration: " + (System.currentTimeMillis() - start));
     }
+
 }
