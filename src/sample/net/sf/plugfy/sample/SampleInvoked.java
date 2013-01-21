@@ -6,7 +6,7 @@ package net.sf.plugfy.sample;
  * @author hendrik
  * @param <T> parameter
  */
-public class SampleInvoked<T> implements SampleInvokedInterface<T> {
+public class SampleInvoked<T> extends SampleInvokedParent implements SampleInvokedInterface<T> {
     // empty
 
     /**

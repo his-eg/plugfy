@@ -26,5 +26,8 @@
 				<include name="net/sf/plugfy/sample/SampleClass*.class" />
 			</fileset>
 		</jar>
+		<jar destfile="${dist}/sample-all.jar" index="true" >
+			<fileset dir="${build}/classes-sample" />
+		</jar>
 	</target>
 </project>

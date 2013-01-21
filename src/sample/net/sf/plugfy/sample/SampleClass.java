@@ -41,9 +41,23 @@ public class SampleClass<T extends SampleClassTypeParameter> extends SampleParen
         System.out.println("temp: " + temp);
 
         SampleInvokedStatic.staticMethod(null);
-        SampleInvokedInterface<SampleLocalVariableType> i = new SampleInvoked<SampleLocalVariableType>();
-        i.instanceMethod(null);
+        SampleInvokedInterface<SampleLocalVariableType> si = new SampleInvoked<SampleLocalVariableType>();
+        si.instanceMethod(null);
 
+        SampleInvoked invoked = new SampleInvoked<SampleLocalVariableType>();
+        
+        int i = 1;
+        int[] ia = new int[] {1, 2};
+        String s = "s";
+        String[] sa = new String[] { "sa", "sa1" };
+        String[][] saa = new String[][] { { "saa", "saa1" } , { "saa2", "saa21" } };
+        Double d = Double.valueOf(1);
+        
+        invoked.parentMethod(i , ia, s, sa, saa, d);
+        invoked.parentMethod(i , ia, s, sa, saa, d, "a");
+        invoked.parentMethod(i , ia, s, sa, saa, d, "a", "b");
+        invoked.parentMethod(i , ia, s, sa, saa, d, sa);
+        
         return null;
     }
 
