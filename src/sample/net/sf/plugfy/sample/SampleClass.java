@@ -9,7 +9,7 @@ import java.util.LinkedList;
  * @author hendrik
  * @param <T>
  */
-public class SampleClass<T extends SampleClassTypeParameter> extends SampleParent<SampleParentClassTypeParameter> implements SampleIface {
+public class SampleClass<T extends SampleClassTypeParameter> extends SampleParent<SampleParentClassTypeParameter> implements SampleIface<SampleIfaceTypeParameter> {
 
     private final static SampleStaticField<SampleStaticFieldParameter> staticField = new SampleStaticFieldInstance();
     private final SampleField<SampleFieldParameter> field = new SampleFieldInstance();
