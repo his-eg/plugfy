@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 import net.sf.plugfy.verifier.VerificationContext;
 
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.EmptyVisitor;
@@ -19,16 +21,19 @@ import org.apache.bcel.generic.TypedInstruction;
  */
 class ClassVisitor extends EmptyVisitor {
 
+    private final JavaClass javaClass;
     private final ConstantPoolGen cpg;
     private final VerificationContext context;
 
     /**
      * class visitor
      *
+     * @param javaClass javaClass
      * @param cpg ConstantPoolGen
      * @param verificationContext VerificationContext
      */
-    ClassVisitor(ConstantPoolGen cpg, VerificationContext verificationContext) {
+    ClassVisitor(JavaClass javaClass, ConstantPoolGen cpg, VerificationContext verificationContext) {
+        this.javaClass = javaClass;
         this.cpg = cpg;
         this.context = verificationContext;
     }
@@ -36,15 +41,108 @@ class ClassVisitor extends EmptyVisitor {
     @Override
     public void visitInvokeInstruction(final InvokeInstruction invokeInstruction) {
         Type type = invokeInstruction.getReferenceType(this.cpg);
-        SignatureUtil.checkSignatureDependencies(context.getRepository(), context.getResult(), type.getSignature());
+        if (! (type instanceof ObjectType)) {
+            return;
+        }
 
-        // TODO: check that the method exists in the target type
-        // TODO: check that the message signature is compatible
-        System.out.println("invoke: " + type + " " + invokeInstruction.getMethodName(this.cpg));
-        System.out.println("    Return: " + invokeInstruction.getType(this.cpg));
-        System.out.println("    Params: " + Arrays.toString(invokeInstruction.getArgumentTypes(this.cpg)));
-        System.out.println("    Except: " + Arrays.toString(invokeInstruction.getExceptions()));
+        String targetClass = ((ObjectType) type).getClassName();
+        String methodName = invokeInstruction.getMethodName(this.cpg);
+        Type[] argumentTypes = invokeInstruction.getArgumentTypes(this.cpg);
+        Type returnType = invokeInstruction.getReturnType(this.cpg);
+
+        if (methodName.equals("<clinit>")) {
+            // the class initializer always exists
+            return;
+        }
+
+        try {
+            JavaClass targetJavaClass = context.getRepository().loadClass(targetClass);
+            boolean inheritance = Arrays.asList(javaClass.getAllInterfaces()).contains(targetJavaClass)
+                               || Arrays.asList(javaClass.getSuperClasses()).contains(targetJavaClass);
+            if (!findMethodRecursive(targetClass, methodName, argumentTypes, returnType, inheritance)) {
+                context.getResult().add(targetClass + " . " + methodName);
+            }
+        } catch (ClassNotFoundException e) {
+            context.getResult().add(targetClass);
+        }
     }
+
+    /**
+     * finds a method
+     *
+     * @param className     name of class
+     * @param methodName    name of method
+     * @param argumentTypes types of arguments
+     * @param returnType    return type
+     * @param isSubclass    is the caller a subclass
+     * @return true, if the method was found, false otherwise
+     * @throws ClassNotFoundException if a super class is not found
+     */
+    private boolean findMethodRecursive(String className, String methodName, Type[] argumentTypes, Type returnType, boolean isSubclass) throws ClassNotFoundException {
+        JavaClass targetJavaClass = context.getRepository().loadClass(className);
+        if (findMethod(targetJavaClass, methodName, argumentTypes, returnType, isSubclass)) {
+            return true;
+        }
+        for (JavaClass entry : targetJavaClass.getSuperClasses()) {
+            if (findMethod(entry, methodName, argumentTypes, returnType, isSubclass)) {
+                return true;
+            }
+        }
+        for (JavaClass entry : targetJavaClass.getAllInterfaces()) {
+            if (findMethod(entry, methodName, argumentTypes, returnType, isSubclass)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * finds a method
+     *
+     * @param targetJavaClass targetJavaClass
+     * @param methodName    name of method
+     * @param argumentTypes types of arguments
+     * @param returnType    return type
+     * @param isSubclass    is the caller a subclass
+     * @return true, if the method was found, false otherwise
+     * @throws ClassNotFoundException if a super class is not found
+     */
+    private boolean findMethod(JavaClass targetJavaClass, String methodName, Type[] argumentTypes, Type returnType, boolean isSubclass) throws ClassNotFoundException {
+        for (Method method : targetJavaClass.getMethods()) {
+            if (!method.getName().equals(methodName)) {
+                continue;
+            }
+
+            if (method.isPrivate() && (!javaClass.equals(targetJavaClass))) {
+                continue;
+            }
+            // TODO: protected and package-protected
+
+            Type declaredReturnType = method.getReturnType();
+
+            // TODO: refinement is allowed for overriden messages
+            if (!declaredReturnType.equals(returnType)) {
+                continue;
+            }
+
+            // check arguments
+            Type[] declaredArgumentTypes = method.getArgumentTypes();
+            if (declaredArgumentTypes.length != argumentTypes.length) {
+                continue;
+            }
+            for (int i = 0; i < argumentTypes.length; i++) {
+                if (!argumentTypes[i].equals(declaredArgumentTypes[i])) {
+                    continue;
+                }
+            }
+
+            // hey, all passed!
+            return true;
+        }
+        return false;
+    }
+
+
 
     @Override
     public void visitTypedInstruction(final TypedInstruction typedinstruction) {

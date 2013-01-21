@@ -44,7 +44,7 @@ public class ClassVerifier implements Verifier {
             throw new IOException(e);
         }
         cpg = new ConstantPoolGen(javaClass.getConstantPool());
-        visitor = new ClassVisitor(cpg, verificationContext);
+        visitor = new ClassVisitor(javaClass, cpg, verificationContext);
 
         analyzeClassSignature();
         analyzeFields();
