@@ -30,9 +30,15 @@ public class JarVerifier implements Verifier {
      */
     @Override
     public void verify(ClassLoader classLoader, String name, VerificationContext context) throws IOException {
+        if (!context.isRecursive()) {
+            return;
+        }
         URL url = classLoader.getResource(name);
-        verify(url, context);
+        if (url != null) {
+            verify(url, classLoader, context);
+        }
     }
+
 
     /**
      * verifies the resource
@@ -42,7 +48,19 @@ public class JarVerifier implements Verifier {
      * @throws IOException in case of an input/output error
      */
     public void verify(URL url, VerificationContext context) throws IOException {
-        ClassLoader subClassLoader = new URLClassLoader(new URL[] {url}, this.getClass().getClassLoader());
+        verify(url, this.getClass().getClassLoader(), context);
+    }
+
+    /**
+     * verifies the resource
+     *
+     * @param url url to resource
+     * @param classLoader classloader
+     * @param context verification context
+     * @throws IOException in case of an input/output error
+     */
+    public void verify(URL url, ClassLoader classLoader, VerificationContext context) throws IOException {
+        ClassLoader subClassLoader = new URLClassLoader(new URL[] {url}, classLoader);
         Repository old = context.getRepository();
         context.setRepository(new ClassLoaderRepository(subClassLoader));
 

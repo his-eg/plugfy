@@ -49,4 +49,11 @@ public class VerificationContext {
         return "VerificationContext [result=" + result + "]";
     }
 
+    /**
+     * @return recursive?
+     */
+    public boolean isRecursive() {
+        return false;
+    }
+
 }
