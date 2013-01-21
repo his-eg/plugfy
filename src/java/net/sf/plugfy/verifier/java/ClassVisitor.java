@@ -63,7 +63,8 @@ class ClassVisitor extends EmptyVisitor {
                 context.getResult().add(targetClass + " . " + methodName);
             }
         } catch (ClassNotFoundException e) {
-            context.getResult().add(targetClass);
+            String msg = e.getMessage();
+            context.getResult().add(msg.substring(0, msg.indexOf(' ')));
         }
     }
 
