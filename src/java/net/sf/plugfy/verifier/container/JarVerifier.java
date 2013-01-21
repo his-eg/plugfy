@@ -61,8 +61,10 @@ public class JarVerifier implements Verifier {
      */
     public void verify(URL url, ClassLoader classLoader, VerificationContext context) throws IOException {
         ClassLoader subClassLoader = new URLClassLoader(new URL[] {url}, classLoader);
-        Repository old = context.getRepository();
+        Repository oldRepository = context.getRepository();
+        ClassLoader oldClassLoader = context.getClassLoader();
         context.setRepository(new ClassLoaderRepository(subClassLoader));
+        context.setClassLoader(subClassLoader);
 
         ZipInputStream zis = new ZipInputStream(url.openStream());
 
@@ -79,6 +81,7 @@ public class JarVerifier implements Verifier {
         } finally {
             zis.close();
         }
-        context.setRepository(old);
+        context.setRepository(oldRepository);
+        context.setClassLoader(oldClassLoader);
     }
 }

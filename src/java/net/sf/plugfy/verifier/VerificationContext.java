@@ -14,13 +14,17 @@ public class VerificationContext {
 
     private Repository repository;
 
+    private ClassLoader classLoader;
+
     /**
      * VerificationContext
      *
      * @param repository bcel repository
+     * @param classLoader class loader
      */
-    public VerificationContext(Repository repository) {
+    public VerificationContext(Repository repository, ClassLoader classLoader) {
         this.repository = repository;
+        this.classLoader = classLoader;
     }
 
     /**
@@ -44,16 +48,30 @@ public class VerificationContext {
         this.repository = repository;
     }
 
-    @Override
-    public String toString() {
-        return "VerificationContext [result=" + result + "]";
-    }
-
     /**
      * @return recursive?
      */
     public boolean isRecursive() {
         return false;
+    }
+
+    /**
+     * @return the classLoader
+     */
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    /**
+     * @param classLoader the classLoader to set
+     */
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
+    @Override
+    public String toString() {
+        return "VerificationContext [result=" + result + "]";
     }
 
 }
