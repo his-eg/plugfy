@@ -37,4 +37,18 @@ public class ClassVerifierTest {
         System.out.println(context.getResult());
     }
 
+    /**
+     * test
+     *
+     * @throws IOException in case of an input/output error
+     */
+    @Test
+    public void test2() throws IOException {
+        URL url = new File("sample/sample-all.jar").toURI().toURL();
+        ClassLoader classLoader = new URLClassLoader(new URL[] {url});
+        VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader);
+        new ClassVerifier().verify(classLoader, "net.sf.plugfy.sample.SampleClass", context);
+        System.out.println(context.getResult());
+    }
+
 }
