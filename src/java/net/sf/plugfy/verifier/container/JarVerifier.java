@@ -22,20 +22,19 @@ public class JarVerifier implements Verifier {
 
     /**
      * verifies the resource
-     *
-     * @param classLoader classLoader
      * @param name filename
      * @param context verification context
+     *
      * @throws IOException in case of an input/output error
      */
     @Override
-    public void verify(ClassLoader classLoader, String name, VerificationContext context) throws IOException {
+    public void verify(String name, VerificationContext context) throws IOException {
         if (!context.isRecursive()) {
             return;
         }
-        URL url = classLoader.getResource(name);
+        URL url = context.getClassLoader().getResource(name);
         if (url != null) {
-            verify(url, classLoader, context);
+            verify(url, context);
         }
     }
 
@@ -48,21 +47,10 @@ public class JarVerifier implements Verifier {
      * @throws IOException in case of an input/output error
      */
     public void verify(URL url, VerificationContext context) throws IOException {
-        verify(url, this.getClass().getClassLoader(), context);
-    }
-
-    /**
-     * verifies the resource
-     *
-     * @param url url to resource
-     * @param classLoader classloader
-     * @param context verification context
-     * @throws IOException in case of an input/output error
-     */
-    public void verify(URL url, ClassLoader classLoader, VerificationContext context) throws IOException {
-        ClassLoader subClassLoader = new URLClassLoader(new URL[] {url}, classLoader);
         Repository oldRepository = context.getRepository();
         ClassLoader oldClassLoader = context.getClassLoader();
+
+        ClassLoader subClassLoader = new URLClassLoader(new URL[] {url}, oldClassLoader);
         context.setRepository(new ClassLoaderRepository(subClassLoader));
         context.setClassLoader(subClassLoader);
 
@@ -74,7 +62,7 @@ public class JarVerifier implements Verifier {
                 String filename = entry.getName();
                 if (!filename.endsWith("/")) {
                     Verifier verifier = new VerifierFactory().create(filename);
-                    verifier.verify(subClassLoader, filename, context);
+                    verifier.verify(filename, context);
                 }
                 entry = zis.getNextEntry();
             }

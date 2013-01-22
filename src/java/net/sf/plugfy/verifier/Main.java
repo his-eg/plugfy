@@ -33,7 +33,7 @@ public class Main {
             // TODO
         } else {
             URL url = file.toURI().toURL();
-            VerificationContext context = new VerificationContext(null, null);
+            VerificationContext context = new VerificationContext(null, Main.class.getClassLoader());
             new JarVerifier().verify(url, context);
             System.out.println("---------------------------------");
             for (String entry : context.getResult()) {

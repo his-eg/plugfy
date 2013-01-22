@@ -29,14 +29,13 @@ public class ClassVerifier implements Verifier {
 
     /**
      * verifies the resource
-     *
-     * @param classLoader classLoader
      * @param name filename
      * @param verificationContext verification context
+     *
      * @throws IOException in case of an input/output error
      */
     @Override
-    public void verify(ClassLoader classLoader, String name, VerificationContext verificationContext) throws IOException {
+    public void verify(String name, VerificationContext verificationContext) throws IOException {
         this.context = verificationContext;
         try {
             javaClass = context.getRepository().loadClass(name.replace('/', '.').replaceAll("\\.class$", ""));
