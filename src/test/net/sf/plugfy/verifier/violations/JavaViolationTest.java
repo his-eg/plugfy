@@ -70,4 +70,21 @@ public class JavaViolationTest {
 
     }
 
+    /**
+     * Test method for {@link net.sf.plugfy.verifier.violations.JavaViolation#create(String, String)}
+     */
+    @Test
+    public void testCreate() {
+        final JavaViolation actual = JavaViolation.create("class", "method");
+        assertThat(actual, is(JavaViolation.create("class", "method")));
+    }
+
+    /**
+     * Test method for {@link net.sf.plugfy.verifier.violations.JavaViolation#create(String, String)}
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateWithException() {
+        JavaViolation.create(null, null);
+    }
+
 }

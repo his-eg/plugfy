@@ -12,6 +12,8 @@
  */
 package net.sf.plugfy.verifier;
 
+import java.net.URL;
+
 import org.apache.bcel.util.Repository;
 
 
@@ -28,35 +30,39 @@ public class VerificationContext {
 
     private ClassLoader classLoader;
 
+    private final URL underVerification;
+
     /**
      * VerificationContext
      *
      * @param repository bcel repository
      * @param classLoader class loader
+     * @param url the resource under verification
      */
-    public VerificationContext(Repository repository, ClassLoader classLoader) {
+    public VerificationContext(final Repository repository, final ClassLoader classLoader, final URL url) {
         this.repository = repository;
         this.classLoader = classLoader;
+        this.underVerification = url;
     }
 
     /**
      * @return the result
      */
     public VerificationResult getResult() {
-        return result;
+        return this.result;
     }
 
     /**
      * @return the repository
      */
     public Repository getRepository() {
-        return repository;
+        return this.repository;
     }
 
     /**
      * @param repository Repository
      */
-    public void setRepository(Repository repository) {
+    public void setRepository(final Repository repository) {
         this.repository = repository;
     }
 
@@ -71,19 +77,26 @@ public class VerificationContext {
      * @return the classLoader
      */
     public ClassLoader getClassLoader() {
-        return classLoader;
+        return this.classLoader;
     }
 
     /**
      * @param classLoader the classLoader to set
      */
-    public void setClassLoader(ClassLoader classLoader) {
+    public void setClassLoader(final ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
 
     @Override
     public String toString() {
-        return "VerificationContext [result=" + result + "]";
+        return "VerificationContext [verified=" + this.underVerification.toExternalForm() + ", result=" + this.result + "]";
+    }
+
+    /**
+     * @return the url of the resource, which is under verification
+     */
+    public URL getUnderVerification() {
+        return this.underVerification;
     }
 
 }
