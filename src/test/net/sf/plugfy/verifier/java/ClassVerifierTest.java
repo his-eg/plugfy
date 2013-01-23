@@ -39,21 +39,22 @@ public class ClassVerifierTest {
      */
     @Test
     public void test() throws IOException {
-        URL url = new File("sample/sample.jar").toURI().toURL();
-        ClassLoader classLoader = new URLClassLoader(new URL[] {url});
+        final URL url = new File("sample/sample.jar").toURI().toURL();
+        final ClassLoader classLoader = new URLClassLoader(new URL[] {url});
         VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader);
         new ClassVerifier().verify("net.sf.plugfy.sample.SampleClass", context);
 
         System.out.println(context.getResult());
         System.out.println("-------------------");
-        assertThat(context.getResult().toString(), equalTo("[net.sf.plugfy.sample.SampleArrayField, net.sf.plugfy.sample.SampleField, net.sf.plugfy.sample.SampleFieldInstance, net.sf.plugfy.sample.SampleFieldParameter, net.sf.plugfy.sample.SampleIface, net.sf.plugfy.sample.SampleIfaceTypeParameter, net.sf.plugfy.sample.SampleInvoked, net.sf.plugfy.sample.SampleInvokedInterface, net.sf.plugfy.sample.SampleInvokedStatic, net.sf.plugfy.sample.SampleLocalVariable, net.sf.plugfy.sample.SampleLocalVariableInstance, net.sf.plugfy.sample.SampleMethodParameter, net.sf.plugfy.sample.SampleMethodParameterType, net.sf.plugfy.sample.SampleMethodReturnType, net.sf.plugfy.sample.SampleParent, net.sf.plugfy.sample.SampleParentClassTypeParameter, net.sf.plugfy.sample.SampleReturn, net.sf.plugfy.sample.SampleStaticBlockFieldInstance, net.sf.plugfy.sample.SampleStaticField, net.sf.plugfy.sample.SampleStaticFieldInstance, net.sf.plugfy.sample.SampleStaticFieldParameter, net.sf.plugfy.sample.SampleUnusedReturn]"));
+        assertThat(context.getResult().toString(),
+                        equalTo("[JavaViolation [missingType=net.sf.plugfy.sample.SampleArrayField], JavaViolation [missingType=net.sf.plugfy.sample.SampleField], JavaViolation [missingType=net.sf.plugfy.sample.SampleFieldInstance], JavaViolation [missingType=net.sf.plugfy.sample.SampleFieldParameter], JavaViolation [missingType=net.sf.plugfy.sample.SampleIface], JavaViolation [missingType=net.sf.plugfy.sample.SampleIfaceTypeParameter], JavaViolation [missingType=net.sf.plugfy.sample.SampleInvoked], JavaViolation [missingType=net.sf.plugfy.sample.SampleInvokedInterface], JavaViolation [missingType=net.sf.plugfy.sample.SampleInvokedStatic], JavaViolation [missingType=net.sf.plugfy.sample.SampleLocalVariable], JavaViolation [missingType=net.sf.plugfy.sample.SampleLocalVariableInstance], JavaViolation [missingType=net.sf.plugfy.sample.SampleMethodParameter], JavaViolation [missingType=net.sf.plugfy.sample.SampleMethodParameterType], JavaViolation [missingType=net.sf.plugfy.sample.SampleMethodReturnType], JavaViolation [missingType=net.sf.plugfy.sample.SampleParent], JavaViolation [missingType=net.sf.plugfy.sample.SampleParentClassTypeParameter], JavaViolation [missingType=net.sf.plugfy.sample.SampleReturn], JavaViolation [missingType=net.sf.plugfy.sample.SampleStaticBlockFieldInstance], JavaViolation [missingType=net.sf.plugfy.sample.SampleStaticField], JavaViolation [missingType=net.sf.plugfy.sample.SampleStaticFieldInstance], JavaViolation [missingType=net.sf.plugfy.sample.SampleStaticFieldParameter], JavaViolation [missingType=net.sf.plugfy.sample.SampleUnusedReturn]]"));
         // offen SampleClassTypeParameter, SampleLocalVariableType, SampleInvokedMethodParameter, SampleInvokedMethodParameterType, SampleInvokedParent
 
         context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader);
         new ClassVerifier().verify("net.sf.plugfy.sample.SampleClass$SampleInner", context);
 
         System.out.println(context.getResult());
-        assertThat(context.getResult().toString(), equalTo("[net.sf.plugfy.sample.SampleInnerParameter, net.sf.plugfy.sample.SampleInnerParent]"));
+        assertThat(context.getResult().toString(), equalTo("[JavaViolation [missingType=net.sf.plugfy.sample.SampleInnerParameter], JavaViolation [missingType=net.sf.plugfy.sample.SampleInnerParent]]"));
     }
 
     /**
@@ -63,9 +64,9 @@ public class ClassVerifierTest {
      */
     @Test
     public void test2() throws IOException {
-        URL url = new File("sample/sample-all.jar").toURI().toURL();
-        ClassLoader classLoader = new URLClassLoader(new URL[] {url});
-        VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader);
+        final URL url = new File("sample/sample-all.jar").toURI().toURL();
+        final ClassLoader classLoader = new URLClassLoader(new URL[] {url});
+        final VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader);
         new ClassVerifier().verify("net.sf.plugfy.sample.SampleClass", context);
         System.out.println(context.getResult());
         assertThat(context.getResult().toString(), equalTo("[]"));
