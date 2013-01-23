@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import net.sf.plugfy.verifier.container.JarVerifier;
+import net.sf.plugfy.verifier.violations.JavaViolation;
 
 /**
  * verifies the dependencies
@@ -31,24 +32,24 @@ public class Main {
      * @param args jar file
      * @throws IOException in case of an input/output error
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(final String[] args) throws IOException {
 
-        long start = System.currentTimeMillis();
+        final long start = System.currentTimeMillis();
 
         if (args.length != 1) {
             System.err.println("Please provide the name of the .jar file to analyse as parameter.");
             System.exit(1);
         }
 
-        File file = new File(args[0]);
+        final File file = new File(args[0]);
         if (file.isDirectory()) {
             // TODO
         } else {
-            URL url = file.toURI().toURL();
-            VerificationContext context = new VerificationContext(null, Main.class.getClassLoader());
+            final URL url = file.toURI().toURL();
+            final VerificationContext context = new VerificationContext(null, Main.class.getClassLoader());
             new JarVerifier().verify(url, context);
             System.out.println("---------------------------------");
-            for (String entry : context.getResult()) {
+            for (final JavaViolation entry : context.getResult()) {
                 System.out.println(entry);
             }
         }

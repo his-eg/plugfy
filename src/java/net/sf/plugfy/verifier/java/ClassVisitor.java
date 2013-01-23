@@ -15,6 +15,7 @@ package net.sf.plugfy.verifier.java;
 import java.util.Arrays;
 
 import net.sf.plugfy.verifier.VerificationContext;
+import net.sf.plugfy.verifier.violations.JavaViolation;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -44,7 +45,7 @@ class ClassVisitor extends EmptyVisitor {
      * @param cpg ConstantPoolGen
      * @param verificationContext VerificationContext
      */
-    ClassVisitor(JavaClass javaClass, ConstantPoolGen cpg, VerificationContext verificationContext) {
+    ClassVisitor(final JavaClass javaClass, final ConstantPoolGen cpg, final VerificationContext verificationContext) {
         this.javaClass = javaClass;
         this.cpg = cpg;
         this.context = verificationContext;
@@ -52,15 +53,15 @@ class ClassVisitor extends EmptyVisitor {
 
     @Override
     public void visitInvokeInstruction(final InvokeInstruction invokeInstruction) {
-        Type type = invokeInstruction.getReferenceType(this.cpg);
+        final Type type = invokeInstruction.getReferenceType(this.cpg);
         if (! (type instanceof ObjectType)) {
             return;
         }
 
-        String targetClass = ((ObjectType) type).getClassName();
-        String methodName = invokeInstruction.getMethodName(this.cpg);
-        Type[] argumentTypes = invokeInstruction.getArgumentTypes(this.cpg);
-        Type returnType = invokeInstruction.getReturnType(this.cpg);
+        final String targetClass = ((ObjectType) type).getClassName();
+        final String methodName = invokeInstruction.getMethodName(this.cpg);
+        final Type[] argumentTypes = invokeInstruction.getArgumentTypes(this.cpg);
+        final Type returnType = invokeInstruction.getReturnType(this.cpg);
 
         if (methodName.equals("<clinit>")) {
             // the class initializer always exists
@@ -68,15 +69,16 @@ class ClassVisitor extends EmptyVisitor {
         }
 
         try {
-            JavaClass targetJavaClass = context.getRepository().loadClass(targetClass);
-            boolean inheritance = Arrays.asList(javaClass.getAllInterfaces()).contains(targetJavaClass)
-                               || Arrays.asList(javaClass.getSuperClasses()).contains(targetJavaClass);
-            if (!findMethodRecursive(targetClass, methodName, argumentTypes, returnType, inheritance)) {
-                context.getResult().add(targetClass + " . " + methodName);
+            final JavaClass targetJavaClass = this.context.getRepository().loadClass(targetClass);
+            final boolean inheritance = Arrays.asList(this.javaClass.getAllInterfaces()).contains(targetJavaClass)
+                            || Arrays.asList(this.javaClass.getSuperClasses()).contains(targetJavaClass);
+            if (!this.findMethodRecursive(targetClass, methodName, argumentTypes, returnType, inheritance)) {
+                this.context.getResult().add(JavaViolation.create(targetClass, methodName));
             }
-        } catch (ClassNotFoundException e) {
-            String msg = e.getMessage();
-            context.getResult().add(msg.substring(0, msg.indexOf(' ')));
+        } catch (final ClassNotFoundException e) {
+            final String msg = e.getMessage();
+            final String className = msg.substring(0, msg.indexOf(' '));
+            this.context.getResult().add(JavaViolation.create(className, null));
         }
     }
 
@@ -91,18 +93,18 @@ class ClassVisitor extends EmptyVisitor {
      * @return true, if the method was found, false otherwise
      * @throws ClassNotFoundException if a super class is not found
      */
-    private boolean findMethodRecursive(String className, String methodName, Type[] argumentTypes, Type returnType, boolean isSubclass) throws ClassNotFoundException {
-        JavaClass targetJavaClass = context.getRepository().loadClass(className);
-        if (findMethod(targetJavaClass, methodName, argumentTypes, returnType, isSubclass)) {
+    private boolean findMethodRecursive(final String className, final String methodName, final Type[] argumentTypes, final Type returnType, final boolean isSubclass) throws ClassNotFoundException {
+        final JavaClass targetJavaClass = this.context.getRepository().loadClass(className);
+        if (this.findMethod(targetJavaClass, methodName, argumentTypes, returnType, isSubclass)) {
             return true;
         }
-        for (JavaClass entry : targetJavaClass.getSuperClasses()) {
-            if (findMethod(entry, methodName, argumentTypes, returnType, isSubclass)) {
+        for (final JavaClass entry : targetJavaClass.getSuperClasses()) {
+            if (this.findMethod(entry, methodName, argumentTypes, returnType, isSubclass)) {
                 return true;
             }
         }
-        for (JavaClass entry : targetJavaClass.getAllInterfaces()) {
-            if (findMethod(entry, methodName, argumentTypes, returnType, isSubclass)) {
+        for (final JavaClass entry : targetJavaClass.getAllInterfaces()) {
+            if (this.findMethod(entry, methodName, argumentTypes, returnType, isSubclass)) {
                 return true;
             }
         }
@@ -120,18 +122,18 @@ class ClassVisitor extends EmptyVisitor {
      * @return true, if the method was found, false otherwise
      * @throws ClassNotFoundException if a super class is not found
      */
-    private boolean findMethod(JavaClass targetJavaClass, String methodName, Type[] argumentTypes, Type returnType, boolean isSubclass) throws ClassNotFoundException {
-        for (Method method : targetJavaClass.getMethods()) {
+    private boolean findMethod(final JavaClass targetJavaClass, final String methodName, final Type[] argumentTypes, final Type returnType, final boolean isSubclass) throws ClassNotFoundException {
+        for (final Method method : targetJavaClass.getMethods()) {
             if (!method.getName().equals(methodName)) {
                 continue;
             }
 
-            if (method.isPrivate() && (!javaClass.equals(targetJavaClass))) {
+            if (method.isPrivate() && !this.javaClass.equals(targetJavaClass)) {
                 continue;
             }
             // TODO: protected and package-protected
 
-            Type declaredReturnType = method.getReturnType();
+            final Type declaredReturnType = method.getReturnType();
 
             // TODO: refinement is allowed for overriden messages
             if (!declaredReturnType.equals(returnType)) {
@@ -139,7 +141,7 @@ class ClassVisitor extends EmptyVisitor {
             }
 
             // check arguments
-            Type[] declaredArgumentTypes = method.getArgumentTypes();
+            final Type[] declaredArgumentTypes = method.getArgumentTypes();
             if (declaredArgumentTypes.length != argumentTypes.length) {
                 continue;
             }
@@ -165,7 +167,7 @@ class ClassVisitor extends EmptyVisitor {
         }
 
         if (type instanceof ObjectType) {
-            SignatureUtil.checkSignatureDependencies(context.getRepository(), context.getResult(), type.getSignature());
+            SignatureUtil.checkSignatureDependencies(this.context.getRepository(), this.context.getResult(), type.getSignature());
         }
     }
 

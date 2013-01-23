@@ -16,32 +16,34 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import net.sf.plugfy.verifier.violations.JavaViolation;
+
 /**
  * results of a verification run
  *
  * @author hendrik
  */
-public class VerificationResult implements Iterable<String> {
+public class VerificationResult implements Iterable<JavaViolation> {
 
-    private final Set<String> results = new TreeSet<String>();
+    private final Set<JavaViolation> results = new TreeSet<JavaViolation>();
 
     /**
      * adds a result
      *
      * @param result result to add
      */
-    public void add(String result) {
-        results.add(result);
+    public void add(final JavaViolation result) {
+        this.results.add(result);
     }
 
     @Override
     public String toString() {
-        return results.toString();
+        return this.results.toString();
     }
 
     @Override
-    public Iterator<String> iterator() {
-        return results.iterator();
+    public Iterator<JavaViolation> iterator() {
+        return this.results.iterator();
     }
 
 }
