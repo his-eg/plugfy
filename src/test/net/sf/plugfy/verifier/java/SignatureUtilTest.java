@@ -58,6 +58,15 @@ public class SignatureUtilTest implements Repository {
         clear();
         SignatureUtil.checkSignatureDependencies(this, result, "<T:Lnet/sf/plugfy/sample/SampleClassTypeParameter;>Lnet/sf/plugfy/sample/SampleParent<Lnet/sf/plugfy/sample/SampleParentClassTypeParameter;>;Lnet/sf/plugfy/sample/SampleIface;");
         assertThat(requestedClasses.toString(), equalTo("[net.sf.plugfy.sample.SampleClassTypeParameter, net.sf.plugfy.sample.SampleIface, net.sf.plugfy.sample.SampleParent, net.sf.plugfy.sample.SampleParentClassTypeParameter]"));
+
+        clear();
+        SignatureUtil.checkSignatureDependencies(this, result, "Ljava/util/List<TCHILD;>;");
+        assertThat(requestedClasses.toString(), equalTo("[java.util.List]"));
+
+        clear();
+        SignatureUtil.checkSignatureDependencies(this, result, "<CHILD:Lde/his/appserver/service/impl/sul/studyhierarchy/container/StudyInfoPermutationTree$TreeNode;>Ljava/lang/Object;");
+        assertThat(requestedClasses.toString(), equalTo("[de.his.appserver.service.impl.sul.studyhierarchy.container.StudyInfoPermutationTree$TreeNode, java.lang.Object]"));
+
     }
 
     @Override

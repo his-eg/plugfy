@@ -30,7 +30,8 @@ class SignatureUtil {
 
     enum State {
         WAITING_FOR_TYPE_START,
-        WAITING_FOR_TYPE_END;
+        WAITING_FOR_TYPE_END,
+        WAITING_FOR_TYPEVAR_END;
     }
 
     /**
@@ -96,14 +97,31 @@ class SignatureUtil {
                 if (chr == 'L') {
                     start = i + 1;
                     state = State.WAITING_FOR_TYPE_END;
+                } else if (chr == 'T') {
+                    start = i + 1;
+                    state = State.WAITING_FOR_TYPEVAR_END;
+                } else if (chr == '<') {
+                    // handle <CHILD:Ljava/lang/String;> by looking for a ":"
+                    for (int j = i + 1; j < signature.length(); j++) {
+                        final char chr2 = signature.charAt(j);
+                        if (chr2 == ':') {
+                            start = i + 1;
+                            state = State.WAITING_FOR_TYPEVAR_END;
+                            break;
+                        } else if (chr2 == '<' || chr2 == '>' || chr2 == ';') {
+                            break;
+                        }
+                    }
                 }
             } else {
-                if (chr == '<' || chr == '>' || chr == ';') {
-                    final String type = signature.substring(start, i).replace('/', '.');
-                    try {
-                        repository.loadClass(type);
-                    } catch (final ClassNotFoundException e) {
-                        result.add(JavaViolation.create(type, null));
+                if (chr == '<' || chr == '>' || chr == ';' || chr == ':') {
+                    if (state ==  State.WAITING_FOR_TYPE_END) {
+                        final String type = signature.substring(start, i).replace('/', '.');
+                        try {
+                            repository.loadClass(type);
+                        } catch (final ClassNotFoundException e) {
+                            result.add(JavaViolation.create(type, null));
+                        }
                     }
                     state = State.WAITING_FOR_TYPE_START;
                 }
