@@ -40,14 +40,14 @@ class SignatureUtil {
      * @param result VerificationResult
      * @param entity method or field
      */
-    public static void checkSignatureDependencies(final Repository repository, final VerificationResult result, final FieldOrMethod entity) {
+    public static void checkSignatureDependencies(final Repository repository, final VerificationResult result, final FieldOrMethod entity, final String sourceType) {
 
         // check method signature. And check extended signature without erased types, if defined.
-        SignatureUtil.checkSignatureDependencies(repository, result, entity.getSignature());
+        SignatureUtil.checkSignatureDependencies(repository, result, entity.getSignature(), sourceType);
         for (final Attribute attribute : entity.getAttributes()) {
             if (attribute instanceof Signature) {
                 final Signature sig = (Signature) attribute;
-                SignatureUtil.checkSignatureDependencies(repository, result, sig.getSignature());
+                SignatureUtil.checkSignatureDependencies(repository, result, sig.getSignature(), sourceType);
             }
         }
     }
@@ -65,7 +65,7 @@ class SignatureUtil {
         for (final Attribute attribute : entity.getAttributes()) {
             if (attribute instanceof Signature) {
                 final Signature sig = (Signature) attribute;
-                SignatureUtil.checkSignatureDependencies(repository, result, sig.getSignature());
+                SignatureUtil.checkSignatureDependencies(repository, result, sig.getSignature(), entity.getClassName());
             }
         }
     }
@@ -77,14 +77,15 @@ class SignatureUtil {
      * @param repository repository
      * @param result VerificationResult
      * @param signature  signature
+     * @param sourceType type containing the signature
      */
-    public static void checkSignatureDependencies(final Repository repository, final VerificationResult result, final String signature) {
+    public static void checkSignatureDependencies(final Repository repository, final VerificationResult result, final String signature, final String sourceType) {
         if (signature == null || signature.isEmpty()) {
             return;
         }
         if (signature.charAt(0) == '(') {
-            checkSignatureDependencies(repository, result, signature.substring(1, signature.indexOf(')')));
-            checkSignatureDependencies(repository, result, signature.substring(signature.indexOf(')') + 1, signature.length()));
+            checkSignatureDependencies(repository, result, signature.substring(1, signature.indexOf(')')), sourceType);
+            checkSignatureDependencies(repository, result, signature.substring(signature.indexOf(')') + 1, signature.length()), sourceType);
             return;
         }
 
@@ -103,7 +104,7 @@ class SignatureUtil {
                     try {
                         repository.loadClass(type);
                     } catch (final ClassNotFoundException e) {
-                        result.add(JavaViolation.create(type, null));
+                        result.add(JavaViolation.create(sourceType, type, null));
                     }
                     state = State.WAITING_FOR_TYPE_START;
                 }

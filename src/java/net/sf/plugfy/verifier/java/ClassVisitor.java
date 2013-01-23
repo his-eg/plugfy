@@ -62,6 +62,7 @@ class ClassVisitor extends EmptyVisitor {
         final String methodName = invokeInstruction.getMethodName(this.cpg);
         final Type[] argumentTypes = invokeInstruction.getArgumentTypes(this.cpg);
         final Type returnType = invokeInstruction.getReturnType(this.cpg);
+        final String sourceType = this.javaClass.getClassName();
 
         if (methodName.equals("<clinit>")) {
             // the class initializer always exists
@@ -73,12 +74,12 @@ class ClassVisitor extends EmptyVisitor {
             final boolean inheritance = Arrays.asList(this.javaClass.getAllInterfaces()).contains(targetJavaClass)
                             || Arrays.asList(this.javaClass.getSuperClasses()).contains(targetJavaClass);
             if (!this.findMethodRecursive(targetClass, methodName, argumentTypes, returnType, inheritance)) {
-                this.context.getResult().add(JavaViolation.create(targetClass, methodName));
+                this.context.getResult().add(JavaViolation.create(sourceType, targetClass, methodName));
             }
         } catch (final ClassNotFoundException e) {
             final String msg = e.getMessage();
             final String className = msg.substring(0, msg.indexOf(' '));
-            this.context.getResult().add(JavaViolation.create(className, null));
+            this.context.getResult().add(JavaViolation.create(sourceType, className, null));
         }
     }
 
@@ -167,7 +168,7 @@ class ClassVisitor extends EmptyVisitor {
         }
 
         if (type instanceof ObjectType) {
-            SignatureUtil.checkSignatureDependencies(this.context.getRepository(), this.context.getResult(), type.getSignature());
+            SignatureUtil.checkSignatureDependencies(this.context.getRepository(), this.context.getResult(), type.getSignature(), this.javaClass.getClassName());
         }
     }
 

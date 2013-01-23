@@ -24,23 +24,30 @@ public class JavaViolation implements Comparable<JavaViolation> {
     /** name of a required method */
     private final String requiredMethod;
 
+    private final String sourceType;
+
     /**
      * Factory method to create a new violation object
      * 
+     * @param sourceType
      * @param typeName
      * @param methodName
      * @return a new violation object
      */
-    public static JavaViolation create(final String typeName, final String methodName) {
+    public static JavaViolation create(final String sourceType, final String typeName, final String methodName) {
         if (typeName == null) {
             throw new IllegalArgumentException("A JavaViolation must refer to a required type name");
         }
-        return new JavaViolation(typeName, methodName);
+        if (sourceType == null) {
+            throw new IllegalArgumentException("A JavaViolation must have a source type");
+        }
+        return new JavaViolation(sourceType, typeName, methodName);
     }
 
-    private JavaViolation(final String typeName, final String methodName) {
+    private JavaViolation(final String sourceType, final String typeName, final String methodName) {
         this.requiredType = typeName;
         this.requiredMethod = methodName;
+        this.sourceType = sourceType;
     }
 
 
@@ -48,11 +55,13 @@ public class JavaViolation implements Comparable<JavaViolation> {
     public String toString() {
         final StringBuilder builder = new StringBuilder();
         builder.append("JavaViolation [");
-        builder.append("missingType=");
+        builder.append("sourceType=");
+        builder.append(this.sourceType);
+        builder.append(", requiredType=");
         builder.append(this.requiredType);
         if (this.requiredMethod != null) {
             builder.append(", ");
-            builder.append("missingMethod=");
+            builder.append("requiredMethod=");
             builder.append(this.requiredMethod);
         }
         builder.append("]");
@@ -64,10 +73,23 @@ public class JavaViolation implements Comparable<JavaViolation> {
         if (o == null) {
             throw new NullPointerException();
         }
+        final String oSourceType = o.sourceType;
         final String oRequiredType = o.requiredType;
         final String oRequiredMethod = o.requiredMethod;
 
-        //typgleichheit
+        //source type
+        if (this.sourceType == null) {
+            if (oSourceType != null) {
+                return -1;
+            }
+        } else {
+            final int temp = this.sourceType.compareTo(oSourceType);
+            if (temp != 0) {
+                return temp;
+            }
+        }
+
+        //required type
         if (this.requiredType == null) {
             if (oRequiredType != null) {
                 return -1;
@@ -79,7 +101,7 @@ public class JavaViolation implements Comparable<JavaViolation> {
             }
         }
 
-        //methodengleichheit
+        //required method
         if (this.requiredMethod == null) {
             if (oRequiredMethod != null) {
                 return -1;
@@ -101,6 +123,7 @@ public class JavaViolation implements Comparable<JavaViolation> {
         int result = 1;
         result = prime * result + (this.requiredMethod == null ? 0 : this.requiredMethod.hashCode());
         result = prime * result + (this.requiredType == null ? 0 : this.requiredType.hashCode());
+        result = prime * result + (this.sourceType == null ? 0 : this.sourceType.hashCode());
         return result;
     }
 
@@ -130,7 +153,15 @@ public class JavaViolation implements Comparable<JavaViolation> {
         } else if (!this.requiredType.equals(other.requiredType)) {
             return false;
         }
+        if (this.sourceType == null) {
+            if (other.sourceType != null) {
+                return false;
+            }
+        } else if (!this.sourceType.equals(other.sourceType)) {
+            return false;
+        }
         return true;
     }
+
 
 }

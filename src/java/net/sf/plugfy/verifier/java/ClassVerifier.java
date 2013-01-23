@@ -47,34 +47,34 @@ public class ClassVerifier implements Verifier {
      * @throws IOException in case of an input/output error
      */
     @Override
-    public void verify(String name, VerificationContext verificationContext) throws IOException {
+    public void verify(final String name, final VerificationContext verificationContext) throws IOException {
         this.context = verificationContext;
         try {
-            javaClass = context.getRepository().loadClass(name.replace('/', '.').replaceAll("\\.class$", ""));
-        } catch (ClassNotFoundException e) {
+            this.javaClass = this.context.getRepository().loadClass(name.replace('/', '.').replaceAll("\\.class$", ""));
+        } catch (final ClassNotFoundException e) {
             throw new IOException(e);
         }
-        cpg = new ConstantPoolGen(javaClass.getConstantPool());
-        visitor = new ClassVisitor(javaClass, cpg, verificationContext);
+        this.cpg = new ConstantPoolGen(this.javaClass.getConstantPool());
+        this.visitor = new ClassVisitor(this.javaClass, this.cpg, verificationContext);
 
-        analyzeClassSignature();
-        analyzeFields();
-        analyzeMethods();
+        this.analyzeClassSignature();
+        this.analyzeFields();
+        this.analyzeMethods();
     }
 
     /**
      * analyze the class signature
      */
     private void analyzeClassSignature() {
-        SignatureUtil.checkSignatureDependencies(context.getRepository(), context.getResult(), javaClass);
+        SignatureUtil.checkSignatureDependencies(this.context.getRepository(), this.context.getResult(), this.javaClass);
     }
 
     /**
      * analyze fields
      */
     private void analyzeFields() {
-        for (Field field : javaClass.getFields()) {
-            analyzeField(field);
+        for (final Field field : this.javaClass.getFields()) {
+            this.analyzeField(field);
         }
     }
 
@@ -83,16 +83,16 @@ public class ClassVerifier implements Verifier {
      *
      * @param field field
      */
-    private void analyzeField(Field field) {
-        SignatureUtil.checkSignatureDependencies(context.getRepository(), context.getResult(), field);
+    private void analyzeField(final Field field) {
+        SignatureUtil.checkSignatureDependencies(this.context.getRepository(), this.context.getResult(), field, this.javaClass.getClassName());
     }
 
     /**
      * analyze methods
      */
     private void analyzeMethods() {
-        for (Method method : javaClass.getMethods()) {
-            analyzeMethod(method);
+        for (final Method method : this.javaClass.getMethods()) {
+            this.analyzeMethod(method);
         }
     }
 
@@ -101,27 +101,27 @@ public class ClassVerifier implements Verifier {
      *
      * @param method method
      */
-    private void analyzeMethod(Method method) {
+    private void analyzeMethod(final Method method) {
 
         // check real and generic signature of the method
-        SignatureUtil.checkSignatureDependencies(context.getRepository(), context.getResult(), method);
+        SignatureUtil.checkSignatureDependencies(this.context.getRepository(), this.context.getResult(), method, this.javaClass.getClassName());
 
         // check types of variables
-        LocalVariableTable localVariableTable = method.getLocalVariableTable();
+        final LocalVariableTable localVariableTable = method.getLocalVariableTable();
         if (localVariableTable != null) {
-            for (LocalVariable localVariable : localVariableTable.getLocalVariableTable()) {
-                SignatureUtil.checkSignatureDependencies(context.getRepository(), context.getResult(), localVariable.getSignature());
+            for (final LocalVariable localVariable : localVariableTable.getLocalVariableTable()) {
+                SignatureUtil.checkSignatureDependencies(this.context.getRepository(), this.context.getResult(), localVariable.getSignature(), this.javaClass.getClassName());
             }
         }
 
         // check code
-        final MethodGen mg = new MethodGen(method, javaClass.getClassName(), this.cpg);
-        InstructionList instructionList = mg.getInstructionList();
+        final MethodGen mg = new MethodGen(method, this.javaClass.getClassName(), this.cpg);
+        final InstructionList instructionList = mg.getInstructionList();
         if (instructionList != null) {
             InstructionHandle handle = instructionList.getStart();
             while (handle != null) {
                 final Instruction instruction = handle.getInstruction();
-                instruction.accept(visitor);
+                instruction.accept(this.visitor);
                 handle = handle.getNext();
             }
         }
