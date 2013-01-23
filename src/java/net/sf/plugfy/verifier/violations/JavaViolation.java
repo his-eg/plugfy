@@ -13,8 +13,7 @@ package net.sf.plugfy.verifier.violations;
 /**
  * Violation collected by the verifier represent missing  java dependencies
  * 
- * @author keunecke
- * @version $Revision$
+ * @author markus
  */
 public class JavaViolation implements Comparable<JavaViolation> {
 
