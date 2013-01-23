@@ -46,7 +46,7 @@ public class Main {
             // TODO
         } else {
             final URL url = file.toURI().toURL();
-            final VerificationContext context = new VerificationContext(null, Main.class.getClassLoader());
+            final VerificationContext context = new VerificationContext(null, Main.class.getClassLoader(), url);
             new JarVerifier().verify(url, context);
             System.out.println("---------------------------------");
             for (final JavaViolation entry : context.getResult()) {
