@@ -24,6 +24,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.EmptyVisitor;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
 
@@ -135,9 +136,11 @@ class ClassVisitor extends EmptyVisitor {
 
             final Type declaredReturnType = method.getReturnType();
 
-            // TODO: refinement is allowed for overriden messages
+            // refinement is allowed for overriden messages
             if (!declaredReturnType.equals(returnType)) {
-                continue;
+                if (!(declaredReturnType instanceof ReferenceType) || !((ReferenceType) declaredReturnType).isAssignmentCompatibleWith(returnType)) {
+                    continue;
+                }
             }
 
             // check arguments
