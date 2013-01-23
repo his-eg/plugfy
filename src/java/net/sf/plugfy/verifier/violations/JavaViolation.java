@@ -79,12 +79,12 @@ public class JavaViolation implements Comparable<JavaViolation> {
         final StringBuilder builder = new StringBuilder();
         builder.append("JavaViolation [");
         if (this.missingTypeName != null) {
-            builder.append("missingTypeName=");
+            builder.append("missingType=");
             builder.append(this.missingTypeName);
         }
         if (this.missingMethodName != null) {
             builder.append(", ");
-            builder.append("missingMethodName=");
+            builder.append("missingMethod=");
             builder.append(this.missingMethodName);
         }
         builder.append("]");
