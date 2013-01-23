@@ -83,8 +83,16 @@ public class JavaViolationTest {
      * Test method for {@link net.sf.plugfy.verifier.violations.JavaViolation#create(String, String, String)}
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateWithException() {
+    public void testCreateWithExceptionSourceType() {
         JavaViolation.create(null, null, null);
+    }
+
+    /**
+     * Test method for {@link net.sf.plugfy.verifier.violations.JavaViolation#create(String, String, String)}
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateWithExceptionRequiredType() {
+        JavaViolation.create("s", null, null);
     }
 
 }
