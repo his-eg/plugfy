@@ -32,13 +32,13 @@ public class JavaViolation implements Comparable<JavaViolation> {
      * @return a new violation object
      */
     public static JavaViolation create(final String typeName, final String methodName) {
+        if (typeName == null) {
+            throw new IllegalArgumentException("A JavaViolation must refer to a required type name");
+        }
         return new JavaViolation(typeName, methodName);
     }
 
     private JavaViolation(final String typeName, final String methodName) {
-        if (typeName == null) {
-            throw new IllegalArgumentException("A JavaViolation must refer to a required type name");
-        }
         this.requiredType = typeName;
         this.requiredMethod = methodName;
     }
