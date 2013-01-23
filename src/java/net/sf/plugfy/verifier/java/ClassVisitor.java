@@ -24,6 +24,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.EmptyVisitor;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
 
@@ -70,7 +71,8 @@ class ClassVisitor extends EmptyVisitor {
 
         try {
             final JavaClass targetJavaClass = this.context.getRepository().loadClass(targetClass);
-            final boolean inheritance = Arrays.asList(this.javaClass.getAllInterfaces()).contains(targetJavaClass)
+            final boolean inheritance = targetJavaClass.equals(javaClass)
+                            || Arrays.asList(this.javaClass.getAllInterfaces()).contains(targetJavaClass)
                             || Arrays.asList(this.javaClass.getSuperClasses()).contains(targetJavaClass);
             if (!this.findMethodRecursive(targetClass, methodName, argumentTypes, returnType, inheritance)) {
                 this.context.getResult().add(JavaViolation.create(targetClass, methodName));
@@ -118,26 +120,27 @@ class ClassVisitor extends EmptyVisitor {
      * @param methodName    name of method
      * @param argumentTypes types of arguments
      * @param returnType    return type
-     * @param isSubclass    is the caller a subclass
+     * @param isSubClass    is the caller a subclass
      * @return true, if the method was found, false otherwise
      * @throws ClassNotFoundException if a super class is not found
      */
-    private boolean findMethod(final JavaClass targetJavaClass, final String methodName, final Type[] argumentTypes, final Type returnType, final boolean isSubclass) throws ClassNotFoundException {
+    private boolean findMethod(final JavaClass targetJavaClass, final String methodName, final Type[] argumentTypes, final Type returnType, final boolean isSubClass) throws ClassNotFoundException {
         for (final Method method : targetJavaClass.getMethods()) {
             if (!method.getName().equals(methodName)) {
                 continue;
             }
 
-            if (method.isPrivate() && !this.javaClass.equals(targetJavaClass)) {
+            if (!isAccessible(targetJavaClass, method, isSubClass)) {
                 continue;
             }
-            // TODO: protected and package-protected
 
             final Type declaredReturnType = method.getReturnType();
 
-            // TODO: refinement is allowed for overriden messages
+            // refinement is allowed for overriden messages
             if (!declaredReturnType.equals(returnType)) {
-                continue;
+                if (!(declaredReturnType instanceof ReferenceType) || !((ReferenceType) declaredReturnType).isAssignmentCompatibleWith(returnType)) {
+                    continue;
+                }
             }
 
             // check arguments
@@ -157,7 +160,34 @@ class ClassVisitor extends EmptyVisitor {
         return false;
     }
 
+    /**
+     * is the method accessible
+     *
+     * @param targetJavaClass invoked class
+     * @param method          invoked method
+     * @param isSubClass      is it a subclass
+     * @return true, if the method is accessible; false otherwise
+     */
+    private boolean isAccessible(JavaClass targetJavaClass, Method method, boolean isSubClass) {
+        if (method.isPublic()) {
+            return true;
+        }
 
+        if (this.javaClass.equals(targetJavaClass)) {
+            return true;
+        }
+
+        if (method.isPrivate()) {
+            return false;
+        }
+
+        // default or package visible
+        if (javaClass.getPackageName().equals(targetJavaClass.getPackageName())) {
+            return true;
+        }
+
+        return method.isProtected() && isSubClass;
+    }
 
     @Override
     public void visitTypedInstruction(final TypedInstruction typedinstruction) {
