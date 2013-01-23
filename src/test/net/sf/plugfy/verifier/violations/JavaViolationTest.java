@@ -40,11 +40,6 @@ public class JavaViolationTest {
         assertThat(Boolean.valueOf(v2.equals(JavaViolation.create("v2", null))), is(Boolean.TRUE));
         assertThat(Boolean.valueOf(v2.equals(JavaViolation.create("v2", ""))), is(Boolean.FALSE));
         assertThat(Boolean.valueOf(v2.equals(JavaViolation.create("v2", "method"))), is(Boolean.FALSE));
-        final JavaViolation v3 = JavaViolation.create(null, null);
-        assertThat(Boolean.valueOf(v3.equals(JavaViolation.create(null, null))), is(Boolean.TRUE));
-        assertThat(Boolean.valueOf(v3.equals(JavaViolation.create("v3", null))), is(Boolean.FALSE));
-        assertThat(Boolean.valueOf(v3.equals(JavaViolation.create("v3", ""))), is(Boolean.FALSE));
-        assertThat(Boolean.valueOf(v3.equals(JavaViolation.create("v3", "method"))), is(Boolean.FALSE));
     }
 
     /**
@@ -56,8 +51,6 @@ public class JavaViolationTest {
         assertThat(v1.toString(), is("JavaViolation [missingType=v1, missingMethod=method]"));
         final JavaViolation v2 = JavaViolation.create("v2", null);
         assertThat(v2.toString(), is("JavaViolation [missingType=v2]"));
-        final JavaViolation v3 = JavaViolation.create(null, null);
-        assertThat(v3.toString(), is("JavaViolation []"));
     }
 
     /**
@@ -75,8 +68,6 @@ public class JavaViolationTest {
         assertThat(Integer.valueOf(v1.compareTo(v3)), is(Integer.valueOf(1)));
         assertThat(Integer.valueOf(v1.compareTo(v4)), is(Integer.valueOf(-1)));
 
-        assertThat(Integer.valueOf(JavaViolation.create(null, null).compareTo(JavaViolation.create(null, null))), is(Integer.valueOf(0)));
-        assertThat(Integer.valueOf(JavaViolation.create(null, null).compareTo(JavaViolation.create("t", null))), is(Integer.valueOf(-1)));
     }
 
 }

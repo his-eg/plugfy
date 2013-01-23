@@ -36,6 +36,9 @@ public class JavaViolation implements Comparable<JavaViolation> {
     }
 
     private JavaViolation(final String typeName, final String methodName) {
+        if (typeName == null) {
+            throw new IllegalArgumentException("A JavaViolation must refer to a required type name");
+        }
         this.requiredType = typeName;
         this.requiredMethod = methodName;
     }
