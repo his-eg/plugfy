@@ -16,6 +16,7 @@ import java.util.Locale;
 
 import net.sf.plugfy.verifier.container.JarVerifier;
 import net.sf.plugfy.verifier.java.ClassVerifier;
+import net.sf.plugfy.verifier.spring.SpringVerifier;
 
 /**
  * factory for verifiers
@@ -36,6 +37,8 @@ public class VerifierFactory {
             return new JarVerifier();
         } else if (lower.endsWith(".class")) {
             return new ClassVerifier();
+        } else if (lower.endsWith(".xml")) {
+            return new SpringVerifier();
         }
 
         // if there is no verifier, return a dummy one instead of null
