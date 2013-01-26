@@ -28,6 +28,9 @@
 		</jar>
 		<jar destfile="${dist}/sample-all.jar" index="true" >
 			<fileset dir="${build}/classes-sample" />
+			<fileset dir="src/sample">
+				<include name="*.xml"/>
+			</fileset>
 		</jar>
 	</target>
 </project>
