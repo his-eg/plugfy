@@ -8,7 +8,7 @@ package net.sf.plugfy.verifier.violations;
  * 
  * @author markus
  */
-public class SpringViolation {
+public class SpringViolation extends AbstractViolation {
     
     private final String sourceFile;
     
@@ -34,6 +34,8 @@ public class SpringViolation {
          }
         return new SpringViolation(sourceFile, beanId, beanClass);
     }
+
+    
 
     /**
      * @param sourceFile
@@ -92,4 +94,24 @@ public class SpringViolation {
         return true;
     }
 
+
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("SpringViolation [");
+        builder.append("sourceFile=");
+        builder.append(sourceFile);
+        builder.append(", ");
+        builder.append("beanId=");
+        builder.append(beanId);
+        if (beanClass != null) {
+            builder.append(", ");
+            builder.append("beanClass=");
+            builder.append(beanClass);
+        }
+        builder.append("]");
+        return builder.toString();
+    }
+    
 }

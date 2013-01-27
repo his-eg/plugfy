@@ -2,6 +2,7 @@ package net.sf.plugfy.verifier.spring;
 
 import net.sf.plugfy.verifier.VerificationContext;
 import net.sf.plugfy.verifier.violations.JavaViolation;
+import net.sf.plugfy.verifier.violations.SpringViolation;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -47,11 +48,12 @@ class SpringBeanContentHandler extends DefaultHandler {
 
     protected void checkAvailabilityOfBeanClass(Attributes attributes) {
         String beanClazz = attributes.getValue("class");
+        String beanId = attributes.getValue("id");
         if(beanClazz != null) {
             try {
                 context.getClassLoader().loadClass(beanClazz);
             } catch (ClassNotFoundException e) {
-                context.getResult().add(JavaViolation.create(this.file, beanClazz, null));
+                context.getResult().add(SpringViolation.create(this.file, beanId, beanClazz));
             }
         }
     }

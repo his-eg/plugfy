@@ -16,23 +16,23 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.sf.plugfy.verifier.violations.JavaViolation;
+import net.sf.plugfy.verifier.violations.AbstractViolation;
 
 /**
  * results of a verification run
  *
  * @author hendrik
  */
-public class VerificationResult implements Iterable<JavaViolation> {
+public class VerificationResult implements Iterable<AbstractViolation> {
 
-    private final Set<JavaViolation> results = new TreeSet<JavaViolation>();
+    private final Set<AbstractViolation> results = new TreeSet<AbstractViolation>();
 
     /**
      * adds a result
      *
      * @param result result to add
      */
-    public void add(final JavaViolation result) {
+    public void add(final AbstractViolation result) {
         this.results.add(result);
     }
 
@@ -42,7 +42,7 @@ public class VerificationResult implements Iterable<JavaViolation> {
     }
 
     @Override
-    public Iterator<JavaViolation> iterator() {
+    public Iterator<AbstractViolation> iterator() {
         return this.results.iterator();
     }
 

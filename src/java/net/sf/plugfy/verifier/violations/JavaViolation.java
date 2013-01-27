@@ -15,7 +15,7 @@ package net.sf.plugfy.verifier.violations;
  * 
  * @author markus
  */
-public class JavaViolation implements Comparable<JavaViolation> {
+public class JavaViolation extends AbstractViolation implements Comparable<JavaViolation> {
 
     /** name of a required class */
     private final String requiredType;

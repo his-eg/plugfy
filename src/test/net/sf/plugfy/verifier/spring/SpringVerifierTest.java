@@ -34,7 +34,7 @@ public class SpringVerifierTest {
         new SpringVerifier().verify("bean-config.xml", context);
         System.out.println(context.getResult());
         System.out.println("-------------------");
-        assertThat(context.getResult().toString(), is("[JavaViolation [sourceType=bean-config.xml, requiredType=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]]"));
+        assertThat(context.getResult().toString(), is("[SpringViolation [sourceFile=bean-config.xml, beanId=missingBean, beanClass=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]]"));
     }
     
     /**
@@ -50,7 +50,7 @@ public class SpringVerifierTest {
         new JarVerifier().verify(url, context);
         System.out.println(context);
         System.out.println("-------------------");
-        assertThat(context.toString(), is("VerificationContext [verified=file:/D:/workspace/plugfy/sample/sample-spring.jar, result=[JavaViolation [sourceType=bean-config.xml, requiredType=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]], missingBeanIds=[sampleBeanMissing]]"));
+        assertThat(context.toString(), is("VerificationContext [verified=file:/D:/workspace/plugfy/sample/sample-spring.jar, result=[SpringViolation [sourceFile=bean-config.xml, beanId=missingBean, beanClass=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]], missingBeanIds=[sampleBeanMissing]]"));
     }
 
 }

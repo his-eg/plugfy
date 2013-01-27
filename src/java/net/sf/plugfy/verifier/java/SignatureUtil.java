@@ -71,7 +71,6 @@ class SignatureUtil {
         }
     }
 
-
     /**
      * checks the dependencies for a signature
      *
