@@ -10,7 +10,7 @@
   </bean>
 
   <bean id="sampleBean" class="net.sf.plugfy.sample.SampleClass">
-    <!-- additional collaborators and configuration for this bean go here -->
+      <property name="sampleDependency" ref="sampleBeanMissing" />
   </bean>
 
   <!-- more bean definitions for data access objects go here -->
