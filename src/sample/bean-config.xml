@@ -4,12 +4,12 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="accountDao"
+  <bean id="missingBean"
       class="org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao">
     <!-- additional collaborators and configuration for this bean go here -->
   </bean>
 
-  <bean id="itemDao" class="org.springframework.samples.jpetstore.dao.ibatis.SqlMapItemDao">
+  <bean id="sampleBean" class="net.sf.plugfy.sample.SampleClass">
     <!-- additional collaborators and configuration for this bean go here -->
   </bean>
 
