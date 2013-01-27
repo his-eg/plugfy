@@ -11,7 +11,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *  
  * @author markus
  */
-class SpringBeanContentHandler extends DefaultHandler {
+class SpringVerifierContentHandler extends DefaultHandler {
 
     private VerificationContext context;
     
@@ -23,7 +23,7 @@ class SpringBeanContentHandler extends DefaultHandler {
      * @param context
      * @param name 
      */
-    public SpringBeanContentHandler(VerificationContext context, String name) {
+    public SpringVerifierContentHandler(VerificationContext context, String name) {
         this.context = context;
         this.file = name;
     }

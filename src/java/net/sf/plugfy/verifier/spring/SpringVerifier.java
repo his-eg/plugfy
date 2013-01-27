@@ -23,7 +23,7 @@ public class SpringVerifier implements Verifier {
             URL url = context.getClassLoader().getResource(name);
             SAXParserFactory parserFactory = SAXParserFactory.newInstance();
             SAXParser saxParser = parserFactory.newSAXParser();
-            SpringBeanContentHandler contentHandler = new SpringBeanContentHandler(context, name);
+            SpringVerifierContentHandler contentHandler = new SpringVerifierContentHandler(context, name);
             saxParser.parse(url.openStream(), contentHandler);
         } catch (SAXException e) {
             e.printStackTrace();
