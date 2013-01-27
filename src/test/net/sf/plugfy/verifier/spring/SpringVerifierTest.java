@@ -49,7 +49,7 @@ public class SpringVerifierTest {
         new JarVerifier().verify(url, context);
         System.out.println(context);
         System.out.println("-------------------");
-        assertThat(context.toString(), is("VerificationContext [verified=" + url.toString() + ", result=[SpringViolation [sourceFile=bean-config.xml, beanId=missingBean, beanClass=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]], missingBeanIds=[SpringViolation [sourceFile=bean-config.xml, beanId=sampleBeanMissing]]]"));
+        assertThat(context.toString(), is("VerificationContext [verified=" + url.toString() + ", result=[SpringViolation [sourceFile=bean-config.xml, beanId=missingBean, beanClass=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]], missingBeanIds=[SpringViolation [sourceFile=bean-config.xml, beanId=sampleBeanMissing], SpringViolation [sourceFile=bean-config.xml, beanId=missingFactory]]]"));
     }
 
 }
