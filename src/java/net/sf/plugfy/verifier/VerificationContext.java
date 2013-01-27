@@ -97,7 +97,7 @@ public class VerificationContext {
 
     @Override
     public String toString() {
-        return "VerificationContext [verified=" + this.underVerification.toExternalForm() + ", result=" + this.result + "]";
+        return "VerificationContext [verified=" + this.underVerification.toExternalForm() + ", result=" + this.result + ", missingBeanIds="+this.requiredBeanIds+"]";
     }
 
     /**
