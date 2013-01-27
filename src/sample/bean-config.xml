@@ -12,6 +12,11 @@
   <bean id="sampleBean" class="net.sf.plugfy.sample.SampleClass">
       <property name="sampleDependency" ref="sampleBeanMissing" />
   </bean>
+  
+  <bean id="beanWithExistingFactory" factory-bean="sampleBean">
+  </bean>
+  
+  <bean id="beanWithMissingFactory" factory-bean="missingFactory">
+  </bean>
 
-  <!-- more bean definitions for data access objects go here -->
 </beans>
