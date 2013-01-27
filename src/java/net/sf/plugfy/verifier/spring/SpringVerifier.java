@@ -19,9 +19,9 @@ public class SpringVerifier implements Verifier {
 
     @Override
     public void verify(String name, VerificationContext context) throws IOException {
-        URL url = context.getClassLoader().getResource(name);
-        SAXParserFactory parserFactory = SAXParserFactory.newInstance();
         try {
+            URL url = context.getClassLoader().getResource(name);
+            SAXParserFactory parserFactory = SAXParserFactory.newInstance();
             SAXParser saxParser = parserFactory.newSAXParser();
             SpringBeanContentHandler contentHandler = new SpringBeanContentHandler(context, name);
             saxParser.parse(url.openStream(), contentHandler);

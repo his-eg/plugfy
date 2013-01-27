@@ -34,10 +34,14 @@ class SpringBeanContentHandler extends DefaultHandler {
             // check if bean class is available
             checkAvailabilityOfBeanClass(attributes);
             // register bean in context
-            
+            String beanId = attributes.getValue("id");
+            String beanClazz = attributes.getValue("class");
+            this.context.registerBean(beanId, beanClazz);
         }
-        if("property".equals(localName)) {
+        if("property".equals(qName)) {
             // check referenced bean in context
+            String beanId = attributes.getValue("ref");
+            this.context.requireBean(beanId);
         }
     }
 
