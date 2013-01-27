@@ -26,6 +26,12 @@ public class SpringViolation {
      * @return a new SpringViolation
      */
     public static SpringViolation create(String sourceFile, String beanId, String beanClass) {
+        if(sourceFile == null) {
+           throw new IllegalArgumentException("A SpringViolation must have a sourceFile"); 
+        }
+        if(beanId == null) {
+            throw new IllegalArgumentException("A SpringViolation must have a beanId"); 
+         }
         return new SpringViolation(sourceFile, beanId, beanClass);
     }
 
@@ -34,7 +40,7 @@ public class SpringViolation {
      * @param beanId
      * @param beanClass
      */
-    public SpringViolation(String sourceFile, String beanId, String beanClass) {
+    private SpringViolation(String sourceFile, String beanId, String beanClass) {
         this.sourceFile = sourceFile;
         this.beanId = beanId;
         this.beanClass = beanClass;
