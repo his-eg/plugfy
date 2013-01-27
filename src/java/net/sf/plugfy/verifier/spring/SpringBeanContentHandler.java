@@ -14,14 +14,18 @@ import org.xml.sax.helpers.DefaultHandler;
 class SpringBeanContentHandler extends DefaultHandler {
 
     private VerificationContext context;
+    
+    private String file;
 
     /**
      * Create a handler that relies for checks on the given context
      * 
      * @param context
+     * @param name 
      */
-    public SpringBeanContentHandler(VerificationContext context) {
+    public SpringBeanContentHandler(VerificationContext context, String name) {
         this.context = context;
+        this.file = name;
     }
 
     @Override
@@ -31,7 +35,7 @@ class SpringBeanContentHandler extends DefaultHandler {
             try {
                 context.getClassLoader().loadClass(beanClazz);
             } catch (ClassNotFoundException e) {
-                context.getResult().add(JavaViolation.create("", beanClazz, null));
+                context.getResult().add(JavaViolation.create(this.file, beanClazz, null));
             }
         }
     }
