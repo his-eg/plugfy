@@ -30,7 +30,15 @@ class SpringBeanContentHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        checkAvailabilityOfBeanClass(attributes);
+        if("bean".equals(qName)) {
+            // check if bean class is available
+            checkAvailabilityOfBeanClass(attributes);
+            // register bean in context
+            
+        }
+        if("property".equals(localName)) {
+            // check referenced bean in context
+        }
     }
 
     protected void checkAvailabilityOfBeanClass(Attributes attributes) {

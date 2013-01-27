@@ -6,7 +6,7 @@
 
   <bean id="missingBean"
       class="org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao">
-    <!-- additional collaborators and configuration for this bean go here -->
+      <property name="sampleBean" ref="sampleBean" />
   </bean>
 
   <bean id="sampleBean" class="net.sf.plugfy.sample.SampleClass">
