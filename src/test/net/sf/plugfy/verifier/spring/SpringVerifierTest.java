@@ -1,7 +1,6 @@
 package net.sf.plugfy.verifier.spring;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
@@ -50,7 +49,7 @@ public class SpringVerifierTest {
         new JarVerifier().verify(url, context);
         System.out.println(context);
         System.out.println("-------------------");
-        assertThat(context.toString(), is("VerificationContext [verified=file:/D:/workspace/plugfy/sample/sample-spring.jar, result=[SpringViolation [sourceFile=bean-config.xml, beanId=missingBean, beanClass=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]], missingBeanIds=[SpringViolation [sourceFile=bean-config.xml, beanId=sampleBean], SpringViolation [sourceFile=bean-config.xml, beanId=sampleBeanMissing]]]"));
+        assertThat(context.toString(), is("VerificationContext [verified=file:/D:/workspace/plugfy/sample/sample-spring.jar, result=[SpringViolation [sourceFile=bean-config.xml, beanId=missingBean, beanClass=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]], missingBeanIds=[SpringViolation [sourceFile=bean-config.xml, beanId=sampleBeanMissing]]]"));
     }
 
 }

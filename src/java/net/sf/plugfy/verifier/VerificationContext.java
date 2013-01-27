@@ -15,6 +15,7 @@ package net.sf.plugfy.verifier;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -128,7 +129,13 @@ public class VerificationContext {
      * @param beanClass
      */
     public void registerBean(String beanId, String beanClass) {
-        this.requiredBeanIds.remove(beanId);
+        Iterator<SpringViolation> i = this.requiredBeanIds.iterator();
+        while(i.hasNext()) {
+            SpringViolation v = i.next();
+            if(v.getBeanId().equals(beanId)) {
+                i.remove();
+            }
+        }
         this.beanDefinitions.put(beanId, beanClass);
     }
 
