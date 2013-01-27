@@ -1,7 +1,6 @@
 package net.sf.plugfy.verifier.spring;
 
 import net.sf.plugfy.verifier.VerificationContext;
-import net.sf.plugfy.verifier.violations.JavaViolation;
 import net.sf.plugfy.verifier.violations.SpringViolation;
 
 import org.xml.sax.Attributes;
