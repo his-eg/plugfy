@@ -8,7 +8,7 @@ package net.sf.plugfy.verifier.violations;
  * 
  * @author markus
  */
-public class SpringViolation extends AbstractViolation {
+public class SpringViolation extends AbstractViolation implements Comparable<SpringViolation> {
     
     private final String sourceFile;
     
@@ -77,18 +77,10 @@ public class SpringViolation extends AbstractViolation {
         } else if (!beanClass.equals(other.beanClass)) {
             return false;
         }
-        if (beanId == null) {
-            if (other.beanId != null) {
-                return false;
-            }
-        } else if (!beanId.equals(other.beanId)) {
+        if (!beanId.equals(other.beanId)) {
             return false;
         }
-        if (sourceFile == null) {
-            if (other.sourceFile != null) {
-                return false;
-            }
-        } else if (!sourceFile.equals(other.sourceFile)) {
+        if (!sourceFile.equals(other.sourceFile)) {
             return false;
         }
         return true;
@@ -112,6 +104,13 @@ public class SpringViolation extends AbstractViolation {
         }
         builder.append("]");
         return builder.toString();
+    }
+
+
+
+    @Override
+    public int compareTo(SpringViolation o) {
+        return 0;
     }
     
 }

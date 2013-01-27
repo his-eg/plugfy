@@ -6,10 +6,8 @@ package net.sf.plugfy.verifier.violations;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
-import javax.swing.text.StyledEditorKit.BoldAction;
-
-import org.hamcrest.Matcher;
 import org.junit.Test;
 
 
@@ -58,6 +56,17 @@ public class SpringViolationTest {
         assertThat(v1.toString(), is("SpringViolation [sourceFile=f1, beanId=b1, beanClass=bc1]"));
         SpringViolation v3 = SpringViolation.create("f1", "b1", null);
         assertThat(v3.toString(), is("SpringViolation [sourceFile=f1, beanId=b1]"));
+    }
+    
+    /**
+     * Test compareTo
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testCompareTo() throws Exception {
+        SpringViolation v1 = SpringViolation.create("f1", "b1", "bc1");
+        assertThat(Integer.valueOf(v1.compareTo(v1)), is(Integer.valueOf(0)));
     }
 
 }
