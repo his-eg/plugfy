@@ -50,6 +50,14 @@ class SpringVerifierContentHandler extends DefaultHandler {
     protected void checkAvailabilityOfBeanClass(Attributes attributes) {
         checkBeanClass(attributes);
         checkBeanFactory(attributes);
+        checkParentBean(attributes);
+    }
+
+    private void checkParentBean(Attributes attributes) {
+        String parentBean = attributes.getValue("parent");
+        if(parentBean != null) {
+            this.context.requireBean(SpringViolation.create(file, parentBean, null));
+        }
     }
 
     protected void checkBeanFactory(Attributes attributes) {
