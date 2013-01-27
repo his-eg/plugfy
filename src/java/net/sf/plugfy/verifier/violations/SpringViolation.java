@@ -112,5 +112,14 @@ public class SpringViolation extends AbstractViolation implements Comparable<Spr
     public int compareTo(SpringViolation o) {
         return 0;
     }
+
+
+
+    /**
+     * @return the beanId
+     */
+    public String getBeanId() {
+        return beanId;
+    }
     
 }

@@ -18,6 +18,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.plugfy.verifier.violations.SpringViolation;
+
 import org.apache.bcel.util.Repository;
 
 
@@ -36,9 +38,10 @@ public class VerificationContext {
 
     private final URL underVerification;
     
+    /** Map from bean identifier to bean class */
     private final Map<String, String> beanDefinitions = new HashMap<String, String>();
     
-    private final Set<String> requiredBeanIds = new HashSet<String>();
+    private final Set<SpringViolation> requiredBeanIds = new HashSet<SpringViolation>();
 
     /**
      * VerificationContext
@@ -108,13 +111,13 @@ public class VerificationContext {
     }
     
     /**
-     * Mark a bean identifier as required
+     * Mark a bean as required, which has not yet been found
      * 
-     * @param beanId
+     * @param possibleViolation 
      */
-    public void requireBean(String beanId) {
-        if(!this.beanDefinitions.containsKey(beanId)) {
-            this.requiredBeanIds.add(beanId);
+    public void requireBean(SpringViolation possibleViolation) {
+        if(!this.beanDefinitions.containsKey(possibleViolation.getBeanId())) {
+            this.requiredBeanIds.add(possibleViolation);
         }
     }
     

@@ -42,7 +42,7 @@ class SpringBeanContentHandler extends DefaultHandler {
         if("property".equals(qName)) {
             // check referenced bean in context
             String beanId = attributes.getValue("ref");
-            this.context.requireBean(beanId);
+            this.context.requireBean(SpringViolation.create(this.file, beanId, null));
         }
     }
 
