@@ -1,6 +1,7 @@
 package net.sf.plugfy.verifier.spring;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
@@ -8,6 +9,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import net.sf.plugfy.verifier.VerificationContext;
+import net.sf.plugfy.verifier.container.JarVerifier;
 
 import org.apache.bcel.util.ClassLoaderRepository;
 import org.junit.Test;
@@ -25,7 +27,7 @@ public class SpringVerifierTest {
      * @throws Exception
      */
     @Test
-    public void testVerifier() throws Exception {
+    public void testVerifierClasses() throws Exception {
         final URL url = new File("sample/sample-spring.jar").toURI().toURL();
         final ClassLoader classLoader = new URLClassLoader(new URL[] {url});
         VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader, url);
@@ -33,6 +35,22 @@ public class SpringVerifierTest {
         System.out.println(context.getResult());
         System.out.println("-------------------");
         assertThat(context.getResult().toString(), is("[JavaViolation [sourceType=bean-config.xml, requiredType=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]]"));
+    }
+    
+    /**
+     * Test if missing bean ids are found
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testProperties() throws Exception {
+        final URL url = new File("sample/sample-spring.jar").toURI().toURL();
+        final ClassLoader classLoader = new URLClassLoader(new URL[] {url});
+        VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader, url);
+        new JarVerifier().verify(url, context);
+        System.out.println(context);
+        System.out.println("-------------------");
+        assertThat(context.toString(), is("VerificationContext [verified=file:/D:/workspace/plugfy/sample/sample-spring.jar, result=[JavaViolation [sourceType=bean-config.xml, requiredType=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]], missingBeanIds=[sampleBeanMissing]]"));
     }
 
 }
