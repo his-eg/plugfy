@@ -38,14 +38,28 @@ class SpringVerifierContentHandler extends DefaultHandler {
             String beanClazz = attributes.getValue("class");
             this.context.registerBean(beanId, beanClazz);
         }
+        
         if("property".equals(qName)) {
             // check referenced bean in context
             String beanId = attributes.getValue("ref");
             this.context.requireBean(SpringViolation.create(this.file, beanId, null));
         }
+        
     }
 
     protected void checkAvailabilityOfBeanClass(Attributes attributes) {
+        checkBeanClass(attributes);
+        checkBeanFactory(attributes);
+    }
+
+    protected void checkBeanFactory(Attributes attributes) {
+        String beanFactory = attributes.getValue("factory-bean");
+        if(beanFactory != null) {
+            this.context.requireBean(SpringViolation.create(file, beanFactory, null));
+        }
+    }
+
+    protected void checkBeanClass(Attributes attributes) {
         String beanClazz = attributes.getValue("class");
         String beanId = attributes.getValue("id");
         if(beanClazz != null) {
