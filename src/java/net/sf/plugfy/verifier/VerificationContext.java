@@ -38,10 +38,13 @@ public class VerificationContext {
     private ClassLoader classLoader;
 
     private final URL underVerification;
-    
+
     /** Map from bean identifier to bean class */
     private final Map<String, String> beanDefinitions = new HashMap<String, String>();
-    
+
+    /** Map from bean alias to bean identifier */
+    private final Map<String, String> beanAliases = new HashMap<String, String>();
+
     private final Set<SpringViolation> requiredBeanIds = new HashSet<SpringViolation>();
 
     /**
@@ -110,33 +113,43 @@ public class VerificationContext {
     public URL getUnderVerification() {
         return this.underVerification;
     }
-    
+
     /**
      * Mark a bean as required, which has not yet been found
      * 
-     * @param possibleViolation 
+     * @param possibleViolation
      */
-    public void requireBean(SpringViolation possibleViolation) {
+    public void requireBean(final SpringViolation possibleViolation) {
         if(!this.beanDefinitions.containsKey(possibleViolation.getBeanId())) {
-            this.requiredBeanIds.add(possibleViolation);
+            if (!this.beanAliases.containsKey(possibleViolation.getBeanId())) {
+                this.requiredBeanIds.add(possibleViolation);
+            }
         }
     }
-    
+
     /**
      * Register bean definitions
      * 
      * @param beanId
      * @param beanClass
      */
-    public void registerBean(String beanId, String beanClass) {
-        Iterator<SpringViolation> i = this.requiredBeanIds.iterator();
+    public void registerBean(final String beanId, final String beanClass) {
+        final Iterator<SpringViolation> i = this.requiredBeanIds.iterator();
         while(i.hasNext()) {
-            SpringViolation v = i.next();
+            final SpringViolation v = i.next();
             if(v.getBeanId().equals(beanId)) {
                 i.remove();
             }
         }
         this.beanDefinitions.put(beanId, beanClass);
+    }
+
+    /**
+     * @param alias
+     * @param beanToAlias
+     */
+    public void registerAlias(final String alias, final String beanToAlias) {
+        this.beanAliases.put(alias, beanToAlias);
     }
 
 }
