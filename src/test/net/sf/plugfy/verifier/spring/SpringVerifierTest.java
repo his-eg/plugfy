@@ -19,7 +19,7 @@ import org.junit.Test;
  * @author markus
  */
 public class SpringVerifierTest {
-    
+
     /**
      * Test if missing bean classes are found
      * 
@@ -29,13 +29,13 @@ public class SpringVerifierTest {
     public void testVerifierClasses() throws Exception {
         final URL url = new File("sample/sample-spring.jar").toURI().toURL();
         final ClassLoader classLoader = new URLClassLoader(new URL[] {url});
-        VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader, url);
+        final VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader, url);
         new SpringVerifier().verify("bean-config.xml", context);
         System.out.println(context.getResult());
         System.out.println("-------------------");
         assertThat(context.getResult().toString(), is("[SpringViolation [sourceFile=bean-config.xml, beanId=missingBean, beanClass=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]]"));
     }
-    
+
     /**
      * Test if missing bean ids are found
      * 
@@ -45,11 +45,12 @@ public class SpringVerifierTest {
     public void testProperties() throws Exception {
         final URL url = new File("sample/sample-spring.jar").toURI().toURL();
         final ClassLoader classLoader = new URLClassLoader(new URL[] {url});
-        VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader, url);
+        final VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader, url);
         new JarVerifier().verify(url, context);
         System.out.println(context);
         System.out.println("-------------------");
-        assertThat(context.toString(), is("VerificationContext [verified=" + url.toString() + ", result=[SpringViolation [sourceFile=bean-config.xml, beanId=missingBean, beanClass=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]], missingBeanIds=[SpringViolation [sourceFile=bean-config.xml, beanId=sampleBeanMissing], SpringViolation [sourceFile=bean-config.xml, beanId=missingFactory]]]"));
+        assertThat(context.toString(),
+                        is("VerificationContext [verified=file:/home/keunecke/tomcat_head/workspace/plugfy/sample/sample-spring.jar, result=[SpringViolation [sourceFile=bean-config.xml, beanId=missingBean, beanClass=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]], missingBeanIds=[SpringViolation [sourceFile=bean-config.xml, beanId=sampleBeanMissing], SpringViolation [sourceFile=bean-config.xml, beanId=sampleBeanMissingParent], SpringViolation [sourceFile=bean-config.xml, beanId=missingFactory]]]"));
     }
 
 }

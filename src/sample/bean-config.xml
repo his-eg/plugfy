@@ -18,5 +18,15 @@
   
   <bean id="beanWithMissingFactory" factory-bean="missingFactory">
   </bean>
+  
+  <bean id="beanWithExistingParent" parent="sampleBean">
+  </bean>
+  
+  <bean id="beanWithMissingParent" parent="sampleBeanMissing">
+  </bean>
+  
+  <alias name="sampleBean" alias="aliasExisting"/>
+  
+  <alias name="sampleBeanMissingParent" alias="aliasMissing"/>
 
 </beans>
