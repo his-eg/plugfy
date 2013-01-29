@@ -4,6 +4,6 @@ package net.sf.plugfy.verifier.violations;
  * 
  * @author markus
  */
-public class AbstractViolation {
-
+public abstract class AbstractViolation {
+    // abstract class
 }
