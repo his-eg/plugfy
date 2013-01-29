@@ -40,6 +40,7 @@ class SignatureUtil {
      * @param repository repository
      * @param result VerificationResult
      * @param entity method or field
+     * @param sourceType the type where the check is performed to enable passing it to violations
      */
     public static void checkSignatureDependencies(final Repository repository, final VerificationResult result, final FieldOrMethod entity, final String sourceType) {
 
