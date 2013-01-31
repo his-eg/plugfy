@@ -17,6 +17,7 @@ import java.util.Locale;
 import net.sf.plugfy.verifier.container.JarVerifier;
 import net.sf.plugfy.verifier.java.ClassVerifier;
 import net.sf.plugfy.verifier.spring.SpringVerifier;
+import net.sf.plugfy.verifier.webflow.WebflowVerifier;
 
 /**
  * factory for verifiers
@@ -37,6 +38,8 @@ public class VerifierFactory {
             return new JarVerifier();
         } else if (lower.endsWith(".class")) {
             return new ClassVerifier();
+        } else if (lower.endsWith("-flow.xml")) {
+            return new WebflowVerifier();
         } else if (lower.endsWith(".xml")) {
             return new SpringVerifier();
         }
