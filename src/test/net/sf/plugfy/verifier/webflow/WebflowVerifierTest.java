@@ -4,14 +4,13 @@
 package net.sf.plugfy.verifier.webflow;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 
 import net.sf.plugfy.verifier.VerificationContext;
-import net.sf.plugfy.verifier.java.ClassVerifier;
 
 import org.apache.bcel.util.ClassLoaderRepository;
 import org.junit.Test;
