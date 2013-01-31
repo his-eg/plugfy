@@ -20,7 +20,7 @@ public class WebflowVerifierContentHandler extends DefaultHandler {
 
     private final String sourceFile;
 
-    private final ExpressionLanguageResolverFactory resolver = new ExpressionLanguageResolverFactory(this.sourceFile, this.context);
+    private final ExpressionLanguageResolverFactory resolver;
 
     /**
      * @param context
@@ -29,6 +29,7 @@ public class WebflowVerifierContentHandler extends DefaultHandler {
     public WebflowVerifierContentHandler(final VerificationContext context, final String name) {
         this.context = context;
         this.sourceFile = name;
+        this.resolver = new ExpressionLanguageResolverFactory(this.sourceFile, this.context);
     }
 
     @Override

@@ -11,8 +11,10 @@ package net.sf.plugfy.verifier.el;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.TreeSet;
 
 import net.sf.plugfy.verifier.VerificationContext;
+import net.sf.plugfy.verifier.violations.SpringViolation;
 
 /**
  * @author markus
@@ -38,12 +40,17 @@ public class ExpressionLanguageResolverFactory {
 
     /**
      * parse the expression
+     * @param expression the expression to parse
      */
     public void parse(final String expression) {
+        Collection<SpringViolation> collected = new TreeSet<SpringViolation>();
         for (final ExpressionVerifier v : this.parsers) {
             if (v.matches(expression)) {
-                v.verify(expression);
+                collected.addAll(v.verify(expression));
             }
+        }
+        for (SpringViolation springViolation : collected) {
+            this.context.requireBean(springViolation);
         }
     }
 

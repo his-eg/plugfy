@@ -50,7 +50,8 @@ public class MethodExpressionVerifier implements ExpressionVerifier {
         final List<String> list = Arrays.asList(expression.split("\\."));
         for (final String part : list) {
             if (!part.equals(list.get(list.size() - 1))) {
-                result.add(SpringViolation.create(this.sourceFile, part, null));
+                SpringViolation v = SpringViolation.create(this.sourceFile, part, null);
+                result.add(v);
             }
         }
         return result;

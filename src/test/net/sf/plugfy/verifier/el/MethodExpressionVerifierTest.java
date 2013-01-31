@@ -37,6 +37,8 @@ public class MethodExpressionVerifierTest {
         assertThat(Boolean.valueOf(this.verifier.matches(expressionMethod1)), is(Boolean.TRUE));
         final String expressionMethod2 = "someControllerBean.anotherBean.aNiceMethod()";
         assertThat(Boolean.valueOf(this.verifier.matches(expressionMethod2)), is(Boolean.FALSE));
+        final String expressionMethod3 = "someControllerBean.aNiceMethod(a,b)";
+        assertThat(Boolean.valueOf(this.verifier.matches(expressionMethod3)), is(Boolean.TRUE));
     }
 
     /**
