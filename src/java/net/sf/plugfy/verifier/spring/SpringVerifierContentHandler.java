@@ -80,6 +80,8 @@ class SpringVerifierContentHandler extends DefaultHandler {
                 this.context.getClassLoader().loadClass(beanClazz);
             } catch (final ClassNotFoundException e) {
                 this.context.getResult().add(SpringViolation.create(this.file, beanId, beanClazz));
+            } catch (final NoClassDefFoundError e) {
+                this.context.getResult().add(SpringViolation.create(this.file, beanId, beanClazz));
             }
         }
     }
