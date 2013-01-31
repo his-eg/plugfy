@@ -32,7 +32,13 @@
 		<jar destfile="${dist}/sample-spring.jar" index="true" >
 			<fileset dir="${build}/classes-sample" />
 			<fileset dir="src/sample">
-				<include name="*.xml"/>
+				<include name="bean-config.xml"/>
+			</fileset>
+		</jar>
+		<jar destfile="${dist}/sample-spring-webflow.jar" index="true" >
+			<fileset dir="${build}/classes-sample" />
+			<fileset dir="src/sample">
+				<include name="booking-flow.xml"/>
 			</fileset>
 		</jar>
 	</target>
