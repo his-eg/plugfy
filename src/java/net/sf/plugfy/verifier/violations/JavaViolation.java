@@ -15,7 +15,7 @@ package net.sf.plugfy.verifier.violations;
  * 
  * @author markus
  */
-public class JavaViolation extends AbstractViolation implements Comparable<JavaViolation> {
+public class JavaViolation extends AbstractViolation {
 
     /** name of a required class */
     private final String requiredType;
@@ -68,38 +68,31 @@ public class JavaViolation extends AbstractViolation implements Comparable<JavaV
     }
 
     @Override
-    public int compareTo(final JavaViolation o) {
-        if (o == null) {
+    public int compareTo(final AbstractViolation other) {
+        if (other == null) {
             throw new NullPointerException();
         }
+        if(!(other instanceof JavaViolation)) {
+            return this.getClass().getSimpleName().compareTo(other.getClass().getSimpleName());
+        }
+        
+        JavaViolation o = (JavaViolation) other;
         final String oSourceType = o.sourceType;
         final String oRequiredType = o.requiredType;
         final String oRequiredMethod = o.requiredMethod;
-
+        
         //source type
-        if (this.sourceType == null) {
-            if (oSourceType != null) {
-                return -1;
-            }
-        } else {
-            final int temp = this.sourceType.compareTo(oSourceType);
-            if (temp != 0) {
-                return temp;
-            }
+        final int tempSourceType = this.sourceType.compareTo(oSourceType);
+        if (tempSourceType != 0) {
+            return tempSourceType;
         }
-
+        
         //required type
-        if (this.requiredType == null) {
-            if (oRequiredType != null) {
-                return -1;
-            }
-        } else {
-            final int temp = this.requiredType.compareTo(oRequiredType);
-            if (temp != 0) {
-                return temp;
-            }
+        final int tempRequiredType = this.requiredType.compareTo(oRequiredType);
+        if (tempRequiredType != 0) {
+            return tempRequiredType;
         }
-
+        
         //required method
         if (this.requiredMethod == null) {
             if (oRequiredMethod != null) {
@@ -108,11 +101,11 @@ public class JavaViolation extends AbstractViolation implements Comparable<JavaV
                 return 0;
             }
         }
-
+        
         if (oRequiredMethod != null) {
             return this.requiredMethod.compareTo(oRequiredMethod);
         }
-
+        
         return 1;
     }
 

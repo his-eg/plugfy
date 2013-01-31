@@ -67,7 +67,7 @@ public class JavaViolationTest {
         assertThat(Integer.valueOf(v1.compareTo(v1)), is(Integer.valueOf(0)));
         assertThat(Integer.valueOf(v1.compareTo(v3)), is(Integer.valueOf(1)));
         assertThat(Integer.valueOf(v1.compareTo(v4)), is(Integer.valueOf(-1)));
-
+        assertThat(Integer.valueOf(v1.compareTo(SpringViolation.create("","",""))), not(is(Integer.valueOf(0))));
     }
 
     /**

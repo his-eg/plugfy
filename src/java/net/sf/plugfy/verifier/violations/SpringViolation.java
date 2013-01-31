@@ -8,7 +8,7 @@ package net.sf.plugfy.verifier.violations;
  * 
  * @author markus
  */
-public class SpringViolation extends AbstractViolation implements Comparable<SpringViolation> {
+public class SpringViolation extends AbstractViolation {
     
     private final String sourceFile;
     
@@ -109,8 +109,46 @@ public class SpringViolation extends AbstractViolation implements Comparable<Spr
 
 
     @Override
-    public int compareTo(SpringViolation o) {
-        return 0;
+    public int compareTo(AbstractViolation other) {
+        if (other == null) {
+            throw new NullPointerException();
+        }
+        if(!(other instanceof SpringViolation)) {
+            return this.getClass().getSimpleName().compareTo(other.getClass().getSimpleName());
+        }
+        
+        SpringViolation o = (SpringViolation) other;
+        
+        final String oSourceFile = o.sourceFile;
+        final String oBeanId = o.beanId;
+        final String oBeanClass = o.beanClass;
+        
+        //source file
+        final int tempSourceFile = this.sourceFile.compareTo(oSourceFile);
+        if (tempSourceFile != 0) {
+            return tempSourceFile;
+        }
+        
+        //required type
+        final int tempBeanId = this.beanId.compareTo(oBeanId);
+        if (tempBeanId != 0) {
+            return tempBeanId;
+        }
+        
+        //required method
+        if (this.beanClass == null) {
+            if (oBeanClass != null) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+        
+        if (oBeanClass != null) {
+            return this.beanClass.compareTo(oBeanClass);
+        }
+        
+        return 1;
     }
 
 

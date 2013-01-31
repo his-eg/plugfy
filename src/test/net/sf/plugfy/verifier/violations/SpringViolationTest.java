@@ -65,7 +65,20 @@ public class SpringViolationTest {
     @Test
     public void testCompareTo() throws Exception {
         final SpringViolation v1 = SpringViolation.create("f1", "b1", "bc1");
+        final SpringViolation v2 = SpringViolation.create("f2", "b1", "bc1");
+        final SpringViolation v3 = SpringViolation.create("f2", "b1", null);
+        final SpringViolation v4 = SpringViolation.create("f1", "b2", "bc1");
+        final SpringViolation v5 = SpringViolation.create("f1", "b1", "bc2");
         assertThat(Integer.valueOf(v1.compareTo(v1)), is(Integer.valueOf(0)));
+        assertThat(Integer.valueOf(v1.compareTo(v2)), is(Integer.valueOf(-1)));
+        assertThat(Integer.valueOf(v2.compareTo(v1)), is(Integer.valueOf(1)));
+        assertThat(Integer.valueOf(v1.compareTo(v3)), is(Integer.valueOf(-1)));
+        assertThat(Integer.valueOf(v3.compareTo(v1)), is(Integer.valueOf(1)));
+        assertThat(Integer.valueOf(v1.compareTo(v4)), is(Integer.valueOf(-1)));
+        assertThat(Integer.valueOf(v4.compareTo(v1)), is(Integer.valueOf(1)));
+        assertThat(Integer.valueOf(v1.compareTo(v5)), is(Integer.valueOf(-1)));
+        assertThat(Integer.valueOf(v5.compareTo(v1)), is(Integer.valueOf(1)));
+        assertThat(Integer.valueOf(v1.compareTo(JavaViolation.create("","",""))), not(is(Integer.valueOf(0))));
     }
 
     /**
