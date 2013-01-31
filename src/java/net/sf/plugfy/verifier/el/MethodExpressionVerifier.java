@@ -23,7 +23,7 @@ import net.sf.plugfy.verifier.violations.SpringViolation;
  */
 public class MethodExpressionVerifier implements ExpressionVerifier {
 
-    private final Pattern p = Pattern.compile("([a-zA-Z]*)(\\.[a-zA-Z]*)*(\\(\\))");
+    private final Pattern p = Pattern.compile("([a-zA-Z]*)(\\.[a-zA-Z]*)(\\(([a-zA-Z]*,)*([a-zA-Z]*)\\))");
 
     @Override
     public boolean matches(final String expression) {
