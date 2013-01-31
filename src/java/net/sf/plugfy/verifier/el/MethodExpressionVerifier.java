@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import net.sf.plugfy.verifier.VerificationContext;
 import net.sf.plugfy.verifier.violations.SpringViolation;
 
 /**
@@ -24,6 +25,19 @@ import net.sf.plugfy.verifier.violations.SpringViolation;
 public class MethodExpressionVerifier implements ExpressionVerifier {
 
     private final Pattern p = Pattern.compile("([a-zA-Z]*)(\\.[a-zA-Z]*)(\\(([a-zA-Z]*,)*([a-zA-Z]*)\\))");
+
+    private final String sourceFile;
+
+    private final VerificationContext context;
+
+    /**
+     * @param sourceFile
+     * @param context
+     */
+    public MethodExpressionVerifier(final String sourceFile, final VerificationContext context) {
+        this.context = context;
+        this.sourceFile = sourceFile;
+    }
 
     @Override
     public boolean matches(final String expression) {
@@ -35,7 +49,9 @@ public class MethodExpressionVerifier implements ExpressionVerifier {
         final Collection<SpringViolation> result = new ArrayList<SpringViolation>();
         final List<String> list = Arrays.asList(expression.split("\\."));
         for (final String part : list) {
-            System.out.println(part);
+            if (!part.equals(list.get(list.size() - 1))) {
+                result.add(SpringViolation.create(this.sourceFile, part, null));
+            }
         }
         return result;
     }

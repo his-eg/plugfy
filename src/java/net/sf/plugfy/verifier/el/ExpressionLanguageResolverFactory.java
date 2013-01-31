@@ -10,6 +10,9 @@
 package net.sf.plugfy.verifier.el;
 
 import java.util.Collection;
+import java.util.HashSet;
+
+import net.sf.plugfy.verifier.VerificationContext;
 
 /**
  * @author markus
@@ -17,7 +20,21 @@ import java.util.Collection;
  */
 public class ExpressionLanguageResolverFactory {
 
-    private Collection<ExpressionVerifier> parsers;
+    private final Collection<ExpressionVerifier> parsers = new HashSet<ExpressionVerifier>();
+
+    private final String sourceFile;
+
+    private final VerificationContext context;
+
+    /**
+     * @param sourceFile
+     * @param context
+     */
+    public ExpressionLanguageResolverFactory(final String sourceFile, final VerificationContext context) {
+        this.sourceFile = sourceFile;
+        this.context = context;
+        this.parsers.add(new MethodExpressionVerifier(sourceFile, context));
+    }
 
     /**
      * parse the expression

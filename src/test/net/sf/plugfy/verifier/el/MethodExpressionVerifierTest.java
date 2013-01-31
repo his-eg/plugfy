@@ -12,6 +12,12 @@ package net.sf.plugfy.verifier.el;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Collection;
+import java.util.Iterator;
+
+import net.sf.plugfy.verifier.VerificationContext;
+import net.sf.plugfy.verifier.violations.SpringViolation;
+
 import org.junit.Test;
 
 /**
@@ -20,7 +26,7 @@ import org.junit.Test;
  */
 public class MethodExpressionVerifierTest {
 
-    private final ExpressionVerifier verifier = new MethodExpressionVerifier();
+    private final ExpressionVerifier verifier = new MethodExpressionVerifier("file-flow.xml", new VerificationContext(null, null, null));
 
     /**
      * Test method for {@link net.sf.plugfy.verifier.el.MethodExpressionVerifier#matches(java.lang.String)}.
@@ -39,9 +45,10 @@ public class MethodExpressionVerifierTest {
     @Test
     public void testVerify() {
         final String expressionMethod1 = "someControllerBean.aNiceMethod()";
-        this.verifier.verify(expressionMethod1);
-        final String expressionMethod2 = "someControllerBean.anotherBean.aNiceMethod()";
-        this.verifier.verify(expressionMethod2);
+        final Collection<SpringViolation> verify = this.verifier.verify(expressionMethod1);
+        final Iterator<SpringViolation> it = verify.iterator();
+        assertThat(Boolean.valueOf(it.hasNext()), is(Boolean.TRUE));
+        assertThat(it.next(), is(SpringViolation.create("file-flow.xml", "someControllerBean", null)));
     }
 
 }

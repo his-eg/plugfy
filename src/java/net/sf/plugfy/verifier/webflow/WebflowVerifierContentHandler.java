@@ -4,6 +4,7 @@
 package net.sf.plugfy.verifier.webflow;
 
 import net.sf.plugfy.verifier.VerificationContext;
+import net.sf.plugfy.verifier.el.ExpressionLanguageResolverFactory;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -18,6 +19,8 @@ public class WebflowVerifierContentHandler extends DefaultHandler {
     private final VerificationContext context;
 
     private final String sourceFile;
+
+    private final ExpressionLanguageResolverFactory resolver = new ExpressionLanguageResolverFactory(this.sourceFile, this.context);
 
     /**
      * @param context
@@ -40,7 +43,7 @@ public class WebflowVerifierContentHandler extends DefaultHandler {
      * @param value
      */
     private void handleExpression(final String value) {
-
+        this.resolver.parse(value);
     }
 
 }
