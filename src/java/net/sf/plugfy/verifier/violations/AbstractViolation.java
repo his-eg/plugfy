@@ -5,5 +5,5 @@ package net.sf.plugfy.verifier.violations;
  * @author markus
  */
 public abstract class AbstractViolation implements Comparable<AbstractViolation> {
-
+    //
 }
