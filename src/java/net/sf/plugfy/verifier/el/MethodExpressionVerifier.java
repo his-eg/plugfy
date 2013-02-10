@@ -19,6 +19,8 @@ import net.sf.plugfy.verifier.VerificationContext;
 import net.sf.plugfy.verifier.violations.SpringViolation;
 
 /**
+ * Verifier for method calls in expression language
+ * 
  * @author keunecke
  * @version $Revision$
  */
