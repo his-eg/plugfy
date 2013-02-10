@@ -24,6 +24,7 @@ import net.sf.plugfy.verifier.violations.SpringViolation;
  */
 public class MethodExpressionVerifier implements ExpressionVerifier {
 
+    /**regex pattern to match simple method calls like bean.method(a,b)*/
     private final Pattern p = Pattern.compile("([a-zA-Z]*)(\\.[a-zA-Z]*)(\\(([a-zA-Z]*,)*([a-zA-Z]*)\\))");
 
     private final String sourceFile;
