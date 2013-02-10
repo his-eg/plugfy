@@ -32,7 +32,7 @@
 		<jar destfile="${dist}/sample-spring.jar" index="true" >
 			<fileset dir="${build}/classes-sample" />
 			<fileset dir="src/sample">
-				<include name="bean-config.xml"/>
+				<include name="bean-config-spring.xml"/>
 			</fileset>
 		</jar>
 		<jar destfile="${dist}/sample-spring-webflow.jar" index="true" >

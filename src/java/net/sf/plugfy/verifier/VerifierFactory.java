@@ -40,7 +40,7 @@ public class VerifierFactory {
             return new ClassVerifier();
         } else if (lower.endsWith("-flow.xml")) {
             return new WebflowVerifier();
-        } else if (lower.endsWith(".xml")) {
+        } else if (lower.endsWith("spring.xml")) {
             return new SpringVerifier();
         }
 

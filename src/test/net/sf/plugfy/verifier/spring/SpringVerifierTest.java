@@ -30,10 +30,10 @@ public class SpringVerifierTest {
         final URL url = new File("sample/sample-spring.jar").toURI().toURL();
         final ClassLoader classLoader = new URLClassLoader(new URL[] {url});
         final VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader, url);
-        new SpringVerifier().verify("bean-config.xml", context);
+        new SpringVerifier().verify("bean-config-spring.xml", context);
         System.out.println(context.getResult());
         System.out.println("-------------------");
-        assertThat(context.getResult().toString(), is("[SpringViolation [sourceFile=bean-config.xml, beanId=missingBean, beanClass=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]]"));
+        assertThat(context.getResult().toString(), is("[SpringViolation [sourceFile=bean-config-spring.xml, beanId=missingBean, beanClass=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]]"));
     }
 
     /**
@@ -52,7 +52,7 @@ public class SpringVerifierTest {
         assertThat(context.toString(),
                         is("VerificationContext [verified="
                                         + url.toString()
-                                        + ", result=[SpringViolation [sourceFile=bean-config.xml, beanId=missingBean, beanClass=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]], missingBeanIds=[SpringViolation [sourceFile=bean-config.xml, beanId=sampleBeanMissing], SpringViolation [sourceFile=bean-config.xml, beanId=sampleBeanMissingParent], SpringViolation [sourceFile=bean-config.xml, beanId=missingFactory]]]"));
+                                        + ", result=[SpringViolation [sourceFile=bean-config-spring.xml, beanId=missingBean, beanClass=org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao]], missingBeanIds=[SpringViolation [sourceFile=bean-config-spring.xml, beanId=sampleBeanMissing], SpringViolation [sourceFile=bean-config-spring.xml, beanId=missingFactory], SpringViolation [sourceFile=bean-config-spring.xml, beanId=sampleBeanMissingParent]]]"));
     }
 
 }
