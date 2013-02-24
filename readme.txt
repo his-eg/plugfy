@@ -14,3 +14,6 @@ original parmaeter type.
 
 Plugfy is currently a proof of concept. We are working on building an easy
 to use library with proper documentation.
+
+
+Please report ideas and bugs to http://plugfy.sourceforge.net
