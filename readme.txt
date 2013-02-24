@@ -13,7 +13,8 @@ original parmaeter type.
 
 
 Plugfy is currently a proof of concept. We are working on building an easy
-to use library with proper documentation.
+to use library with proper documentation. For now, have a look at 
+src / java / net / sf / plugfy / verifier / Main.java to get started.
 
 
 Please report ideas and bugs to http://plugfy.sourceforge.net
