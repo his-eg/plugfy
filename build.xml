@@ -77,6 +77,9 @@
 
 	<target name="jar" depends="compile" description="Extension JAR für die Distribution erzeugen">
 		<jar destfile="${target-file}" basedir="${classes-target}" index="true" >
+			<manifest>
+				<attribute name="Main-Class" value="net.sf.plugfy.verifier.Main"/>
+			</manifest>
 		</jar>
 	</target>
 	
