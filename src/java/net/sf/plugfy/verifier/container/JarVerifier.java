@@ -18,6 +18,7 @@ import java.net.URLClassLoader;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import net.sf.plugfy.util.Util;
 import net.sf.plugfy.verifier.VerificationContext;
 import net.sf.plugfy.verifier.Verifier;
 import net.sf.plugfy.verifier.VerifierFactory;
@@ -80,6 +81,9 @@ public class JarVerifier implements Verifier {
             }
         } finally {
             zis.close();
+        }
+        if (oldClassLoader != subClassLoader) {
+            Util.callOptionalMethod(subClassLoader, "close");
         }
         context.setRepository(oldRepository);
         context.setClassLoader(oldClassLoader);
