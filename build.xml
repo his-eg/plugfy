@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="plugfy" default="jar" xmlns:jacoco="antlib:org.jacoco.ant">
-	
+
+	<property name="version" value="0.2" />
+
 	<!-- jacoco definitions -->
 	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
         <classpath path="lib/jacocoant.jar"/>
@@ -8,7 +10,6 @@
 
 	<property name="build" value="build" />
 	<property name="dist" value="dist" />
-	<property name="target-file" value="${dist}/plugfy.jar" />
 	<property name="classes-target" value="${build}/classes" />
 	<property name="test-target" value="${build}/test" />
 	<property name="resources-target" value="${classes-target}/META-INF/resources" />
@@ -76,11 +77,26 @@
 	</target>
 
 	<target name="jar" depends="compile" description="Extension JAR für die Distribution erzeugen">
-		<jar destfile="${target-file}" basedir="${classes-target}" index="true" >
+		<jar destfile="${dist}/plugfy-${version}.jar" basedir="${classes-target}" index="true" >
 			<manifest>
 				<attribute name="Main-Class" value="net.sf.plugfy.verifier.Main"/>
 			</manifest>
 		</jar>
+	</target>
+
+	<target name="dist" depends="jar" description="Creates a distribution zip">
+		<delete file="${dist}/plugfy-${version}.zip" quiet="true" />
+		<zip destfile="${dist}/plugfy-${version}.zip">
+			<zipfileset dir="dist" prefix="">
+				<include name="plugfy-${version}.jar" />
+			</zipfileset>
+			<zipfileset dir=".">
+				<include name="*.txt" />
+				<include name="lib/bcel*.jar" />
+				<include name="sample/**" />
+				<include name="src/**" />
+			</zipfileset>
+		</zip>
 	</target>
 	
 	<target name="compile-tests" depends="compile">
