@@ -12,6 +12,8 @@
  */
 package net.sf.plugfy.util;
 
+import java.lang.reflect.Method;
+
 /**
  * utility methods
  *
@@ -37,5 +39,20 @@ public class Util {
             }
         }
         return null;
+    }
+
+    /**
+     * calls an optional method
+     *
+     * @param object object to call the method on
+     * @param methodName name of method to call
+     */
+    public static void callOptionalMethod(Object object, String methodName) {
+        try {
+            Method m = object.getClass().getMethod(methodName);
+            m.invoke(object);
+        } catch (Exception e) {
+            // ignore
+        }
     }
 }
