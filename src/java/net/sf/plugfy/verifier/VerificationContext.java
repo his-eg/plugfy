@@ -57,7 +57,7 @@ public class VerificationContext {
     public VerificationContext(final Repository repository, final ClassLoader classLoader, final URL url) {
         this.repository = repository;
         this.classLoader = classLoader;
-        underVerification = url;
+        this.underVerification = url;
     }
 
     /**
