@@ -21,6 +21,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import net.sf.plugfy.verifier.VerificationContext;
+import net.sf.plugfy.verifier.container.JarVerifier;
 
 import org.apache.bcel.util.ClassLoaderRepository;
 import org.junit.Test;
@@ -69,6 +70,22 @@ public class ClassVerifierTest {
         final ClassLoader classLoader = new URLClassLoader(new URL[] {url});
         final VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader, url);
         new ClassVerifier().verify("net.sf.plugfy.sample.SampleClass", context);
+        System.out.println(context.getResult());
+        assertThat(context.getResult().toString(), equalTo("[]"));
+    }
+
+    /**
+     * test
+     *
+     * @throws IOException in case of an input/output error
+     */
+    @Test
+    public void test3() throws IOException {
+        final URL url = new File("sample/patch.zip").toURI().toURL();
+        final ClassLoader classLoader = new URLClassLoader(new URL[] { url });
+        final VerificationContext context = new VerificationContext(new ClassLoaderRepository(classLoader), classLoader, url);
+        JarVerifier v = new JarVerifier();
+        v.verify(url, context);
         System.out.println(context.getResult());
         assertThat(context.getResult().toString(), equalTo("[]"));
     }
