@@ -36,7 +36,7 @@ public class VerifierFactory {
      */
     public Verifier create(String filename) {
         String lower = filename.toLowerCase(Locale.ENGLISH);
-        if (lower.endsWith(".zip") || lower.endsWith(".jar")) {
+        if (lower.endsWith(".jar")) {
             return new JarVerifier();
         } else if (lower.endsWith(".class")) {
             return new ClassVerifier();
