@@ -24,7 +24,7 @@ public class DirectoryVerifier implements Verifier {
         if (dir.exists() && dir.isDirectory()) {
             List<File> contents = Arrays.asList(dir.listFiles());
             for (File file : contents) {
-                new VerifierFactory().create(file.getName()).verify(file.getName(), context);
+                new VerifierFactory().create(file.getAbsolutePath()).verify(file.getAbsolutePath(), context);
             }
         } else {
             throw new IllegalArgumentException("You can only verify existing directories. Not existing or no directory: " + name);

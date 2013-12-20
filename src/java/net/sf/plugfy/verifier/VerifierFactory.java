@@ -12,8 +12,10 @@
  */
 package net.sf.plugfy.verifier;
 
+import java.io.File;
 import java.util.Locale;
 
+import net.sf.plugfy.verifier.container.DirectoryVerifier;
 import net.sf.plugfy.verifier.container.JarVerifier;
 import net.sf.plugfy.verifier.java.ClassVerifier;
 import net.sf.plugfy.verifier.spring.SpringVerifier;
@@ -42,6 +44,8 @@ public class VerifierFactory {
             return new WebflowVerifier();
         } else if (lower.endsWith("spring.xml")) {
             return new SpringVerifier();
+        } else if (new File(filename).isDirectory()) {
+            return new DirectoryVerifier();
         }
 
         // if there is no verifier, return a dummy one instead of null
