@@ -13,6 +13,10 @@
       <property name="sampleDependency" ref="sampleBeanMissing" />
   </bean>
   
+  <bean id="sampleBean2" class="net.sf.plugfy.sample.SampleClass">
+      <property name="sampleDependency" ref="sampleBeanPreconfigured" />
+  </bean>
+  
   <bean id="beanWithExistingFactory" factory-bean="sampleBean">
   </bean>
   
