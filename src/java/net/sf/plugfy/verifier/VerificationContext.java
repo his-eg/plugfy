@@ -39,6 +39,8 @@ public class VerificationContext {
 
     private final URL underVerification;
 
+    private boolean recursive = false;
+
     /** Map from bean identifier to bean class */
     private final Map<String, String> beanDefinitions = new HashMap<String, String>();
 
@@ -74,6 +76,20 @@ public class VerificationContext {
     }
 
     /**
+     * VerificationContext
+     * 
+     * @param repository
+     * @param classLoader
+     * @param url
+     * @param beanDefinitions
+     * @param recursive
+     */
+    public VerificationContext(final Repository repository, final ClassLoader classLoader, final URL url, final Map<String, String> beanDefinitions, boolean recursive) {
+        this(repository, classLoader, url, beanDefinitions);
+        this.recursive = recursive;
+    }
+
+    /**
      * @return the result
      */
     public VerificationResult getResult() {
@@ -98,7 +114,7 @@ public class VerificationContext {
      * @return recursive?
      */
     public boolean isRecursive() {
-        return false;
+        return recursive;
     }
 
     /**
