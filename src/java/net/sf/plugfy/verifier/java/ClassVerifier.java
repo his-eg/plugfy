@@ -50,7 +50,9 @@ public class ClassVerifier implements Verifier {
     public void verify(final String name, final VerificationContext verificationContext) throws IOException {
         this.context = verificationContext;
         try {
-            this.javaClass = this.context.getRepository().loadClass(name.replace('/', '.').replaceAll("\\.class$", ""));
+            String prefix = verificationContext.getUnderVerification().getFile();
+            String className = name.replace(prefix, "").replace('/', '.').replaceAll("\\.class$", "");
+            this.javaClass = this.context.getRepository().loadClass(className);
         } catch (final ClassNotFoundException e) {
             throw new IOException(e);
         }

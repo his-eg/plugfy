@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <patchList qisVersion="(Vorabversion)" h1Version="PRE_RELEASE" tomcatRestart="true" patchName="hotfix_hisinone_release4.0_2014-03-4-15-23-43-978_mTbIB">
+        <patch modul="HISinOne">patch 4.0.3</patch>
+    </patchList>
+</root>
+
