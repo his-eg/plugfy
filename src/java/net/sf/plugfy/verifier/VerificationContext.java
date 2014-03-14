@@ -71,7 +71,7 @@ public class VerificationContext {
      * @param beanDefinitions present beans
      */
     public VerificationContext(final Repository repository, final ClassLoader classLoader, final URL url, final Map<String, String> beanDefinitions) {
-        this(repository,classLoader,url);
+        this(repository, classLoader, url);
         this.beanDefinitions.putAll(beanDefinitions);
     }
 
