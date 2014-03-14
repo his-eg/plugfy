@@ -3,12 +3,16 @@
  */
 package net.sf.plugfy.verifier.container;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
 
 import net.sf.plugfy.verifier.VerificationContext;
+import net.sf.plugfy.verifier.VerificationResult;
 
 import org.apache.bcel.util.ClassLoaderRepository;
 import org.apache.bcel.util.Repository;
@@ -35,6 +39,9 @@ public class DirectoryVerifierTest {
         Repository repository = new ClassLoaderRepository(classLoader);
         VerificationContext context = new VerificationContext(repository, classLoader, url, new HashMap<String, String>(), true);
         new DirectoryVerifier().verify("sample/hotfix/", context);
+        VerificationResult result = context.getResult();
+        System.out.println(result);
+        assertThat(result.toString(), is("[JavaViolation [sourceType=TestClassA, requiredType=TestClassB]]"));
     }
 
 }
