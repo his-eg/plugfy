@@ -13,6 +13,7 @@
 package net.sf.plugfy.verifier.java;
 
 import java.io.IOException;
+import java.net.URL;
 
 import net.sf.plugfy.verifier.VerificationContext;
 import net.sf.plugfy.verifier.Verifier;
@@ -27,6 +28,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.util.Repository;
 
 /**
  * verifies a java class
@@ -50,9 +52,12 @@ public class ClassVerifier implements Verifier {
     public void verify(final String name, final VerificationContext verificationContext) throws IOException {
         this.context = verificationContext;
         try {
-            String prefix = verificationContext.getUnderVerification().getFile();
-            String className = name.replace(prefix, "").replace('/', '.').replaceAll("\\.class$", "");
-            this.javaClass = this.context.getRepository().loadClass(className);
+            URL underVerification = verificationContext.getUnderVerification();
+            String prefix = underVerification.getFile();
+            String nameWithoutPrefix = name.replace(prefix, "");
+            String className = nameWithoutPrefix.replace('/', '.').replaceAll("\\.class$", "");
+            Repository repository = this.context.getRepository();
+            this.javaClass = repository.loadClass(className);
         } catch (final ClassNotFoundException e) {
             throw new IOException(e);
         }
