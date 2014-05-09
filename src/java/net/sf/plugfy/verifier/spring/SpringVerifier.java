@@ -2,6 +2,7 @@ package net.sf.plugfy.verifier.spring;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 
@@ -21,6 +22,7 @@ public class SpringVerifier implements Verifier {
 
     @Override
     public void verify(String name, VerificationContext context) throws IOException {
+        InputStream stream = null;
         try {
             URL url = context.getClassLoader().getResource(name);
             if (url == null) {
@@ -32,11 +34,16 @@ public class SpringVerifier implements Verifier {
             SAXParserFactory parserFactory = SAXParserFactory.newInstance();
             SAXParser saxParser = parserFactory.newSAXParser();
             SpringVerifierContentHandler contentHandler = new SpringVerifierContentHandler(context, name);
-            saxParser.parse(url.openStream(), contentHandler);
+            stream = url.openStream();
+            saxParser.parse(stream, contentHandler);
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
+        } finally {
+            if (stream != null) {
+                stream.close();
+            }
         }
     }
 

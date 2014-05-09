@@ -42,7 +42,16 @@ class SpringVerifierContentHandler extends DefaultHandler {
         if("property".equals(qName)) {
             // check referenced bean in context
             final String beanId = attributes.getValue("ref");
-            this.context.requireBean(SpringViolation.create(this.file, beanId, null));
+            // 
+            if (beanId != null) {
+                this.context.requireBean(SpringViolation.create(this.file, beanId, null));
+            }
+        }
+        if ("ref".equals(qName)) {
+            final String beanId = attributes.getValue("bean");
+            if (beanId != null) {
+                this.context.requireBean(SpringViolation.create(this.file, beanId, null));
+            }
         }
         if ("alias".equals(qName)) {
             final String beanToAlias = attributes.getValue("name");
