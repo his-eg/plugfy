@@ -1,0 +1,9 @@
+patch 4.0.3
+-----------
+
+Test-Hotfix mit fehlenden Abhängigkeiten
+
+zu diesem Patch gehören folgende Dateien:
+ - WEB-INF/classes/TestClassA.class
+ - WEB-INF/src/java/TestClassA.java
+

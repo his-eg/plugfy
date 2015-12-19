@@ -39,6 +39,8 @@ public class VerificationContext {
 
     private final URL underVerification;
 
+    private boolean recursive = false;
+
     /** Map from bean identifier to bean class */
     private final Map<String, String> beanDefinitions = new HashMap<String, String>();
 
@@ -61,17 +63,44 @@ public class VerificationContext {
     }
 
     /**
+     * VerificationContext
+     *
+     * @param repository bcel repository
+     * @param classLoader class loader
+     * @param url the resource under verification
+     * @param beanDefinitions present beans
+     */
+    public VerificationContext(final Repository repository, final ClassLoader classLoader, final URL url, final Map<String, String> beanDefinitions) {
+        this(repository, classLoader, url);
+        this.beanDefinitions.putAll(beanDefinitions);
+    }
+
+    /**
+     * VerificationContext
+     * 
+     * @param repository
+     * @param classLoader
+     * @param url
+     * @param beanDefinitions
+     * @param recursive
+     */
+    public VerificationContext(final Repository repository, final ClassLoader classLoader, final URL url, final Map<String, String> beanDefinitions, boolean recursive) {
+        this(repository, classLoader, url, beanDefinitions);
+        this.recursive = recursive;
+    }
+
+    /**
      * @return the result
      */
     public VerificationResult getResult() {
-        return this.result;
+        return result;
     }
 
     /**
      * @return the repository
      */
     public Repository getRepository() {
-        return this.repository;
+        return repository;
     }
 
     /**
@@ -85,14 +114,14 @@ public class VerificationContext {
      * @return recursive?
      */
     public boolean isRecursive() {
-        return false;
+        return recursive;
     }
 
     /**
      * @return the classLoader
      */
     public ClassLoader getClassLoader() {
-        return this.classLoader;
+        return classLoader;
     }
 
     /**
@@ -104,14 +133,14 @@ public class VerificationContext {
 
     @Override
     public String toString() {
-        return "VerificationContext [verified=" + this.underVerification.toExternalForm() + ", result=" + this.result + ", missingBeanIds="+this.requiredBeanIds+"]";
+        return "VerificationContext [verified=" + underVerification.toExternalForm() + ", result=" + result + ", missingBeanIds="+requiredBeanIds+"]";
     }
 
     /**
      * @return the url of the resource, which is under verification
      */
     public URL getUnderVerification() {
-        return this.underVerification;
+        return underVerification;
     }
 
     /**
@@ -120,9 +149,9 @@ public class VerificationContext {
      * @param possibleViolation
      */
     public void requireBean(final SpringViolation possibleViolation) {
-        if(!this.beanDefinitions.containsKey(possibleViolation.getBeanId())) {
-            if (!this.beanAliases.containsKey(possibleViolation.getBeanId())) {
-                this.requiredBeanIds.add(possibleViolation);
+        if(!beanDefinitions.containsKey(possibleViolation.getBeanId())) {
+            if (!beanAliases.containsKey(possibleViolation.getBeanId())) {
+                requiredBeanIds.add(possibleViolation);
             }
         }
     }
@@ -134,14 +163,14 @@ public class VerificationContext {
      * @param beanClass
      */
     public void registerBean(final String beanId, final String beanClass) {
-        final Iterator<SpringViolation> i = this.requiredBeanIds.iterator();
+        final Iterator<SpringViolation> i = requiredBeanIds.iterator();
         while(i.hasNext()) {
             final SpringViolation v = i.next();
             if(v.getBeanId().equals(beanId)) {
                 i.remove();
             }
         }
-        this.beanDefinitions.put(beanId, beanClass);
+        beanDefinitions.put(beanId, beanClass);
     }
 
     /**
@@ -149,7 +178,7 @@ public class VerificationContext {
      * @param beanToAlias
      */
     public void registerAlias(final String alias, final String beanToAlias) {
-        this.beanAliases.put(alias, beanToAlias);
+        beanAliases.put(alias, beanToAlias);
     }
 
 }
