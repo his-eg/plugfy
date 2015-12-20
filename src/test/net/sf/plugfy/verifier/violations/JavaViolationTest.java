@@ -54,7 +54,7 @@ public class JavaViolationTest {
     }
 
     /**
-     * Test method for {@link net.sf.plugfy.verifier.violations.JavaViolation#compareTo(net.sf.plugfy.verifier.violations.JavaViolation)}.
+     * Test method for {@link net.sf.plugfy.verifier.violations.JavaViolation#compareTo(net.sf.plugfy.verifier.violations.AbstractViolation)}.
      */
     @Test
     public void testCompareTo() {
