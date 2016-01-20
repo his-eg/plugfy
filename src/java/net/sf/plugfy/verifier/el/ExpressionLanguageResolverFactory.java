@@ -1,11 +1,13 @@
-/*
- * Copyright (c) 2013 HIS GmbH All Rights Reserved.
+/* Copyright (c) 2013-2016 HIS eG
  *
- * $Id$
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may use this file in compliance with the Apache License, Version 2.0.
  *
- * $Log$
- *
- * Created on 30.01.2013 by keunecke
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package net.sf.plugfy.verifier.el;
 
@@ -18,7 +20,6 @@ import net.sf.plugfy.verifier.violations.SpringViolation;
 
 /**
  * @author markus
- * @version $Revision$
  */
 public class ExpressionLanguageResolverFactory {
 
