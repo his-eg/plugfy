@@ -81,9 +81,7 @@ public class JarVerifier implements Verifier {
         } finally {
             zis.close();
         }
-        if (oldClassLoader != subClassLoader) {
-            Util.callOptionalMethod(subClassLoader, "close");
-        }
+        Util.callOptionalMethod(subClassLoader, "close");
         context.setRepository(oldRepository);
         context.setClassLoader(oldClassLoader);
     }
