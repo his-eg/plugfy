@@ -88,10 +88,7 @@ public class SpringViolation extends AbstractViolation {
         if (!beanId.equals(other.beanId)) {
             return false;
         }
-        if (!sourceFile.equals(other.sourceFile)) {
-            return false;
-        }
-        return true;
+        return sourceFile.equals(other.sourceFile);
     }
 
 
