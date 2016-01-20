@@ -25,10 +25,6 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class WebflowVerifierContentHandler extends DefaultHandler {
 
-    private final VerificationContext context;
-
-    private final String sourceFile;
-
     private final ExpressionLanguageResolverFactory resolver;
 
     /**
@@ -36,9 +32,7 @@ public class WebflowVerifierContentHandler extends DefaultHandler {
      * @param name
      */
     public WebflowVerifierContentHandler(final VerificationContext context, final String name) {
-        this.context = context;
-        this.sourceFile = name;
-        this.resolver = new ExpressionLanguageResolverFactory(this.sourceFile, this.context);
+        this.resolver = new ExpressionLanguageResolverFactory(name, context);
     }
 
     @Override
