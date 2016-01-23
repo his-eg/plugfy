@@ -1,4 +1,4 @@
-Plugfy [![Build Status](https://travis-ci.org/his-eg/plugfy.svg)](https://travis-ci.org/his-eg/plugfy)[![Codacy Badge](https://api.codacy.com/project/badge/grade/484d41f158ac43f4becb1796b3077523)](https://www.codacy.com/app/nhnb/plugfy)
+Plugfy   [![Build Status](https://travis-ci.org/his-eg/plugfy.svg)](https://travis-ci.org/his-eg/plugfy)   [![Codacy Badge](https://api.codacy.com/project/badge/grade/484d41f158ac43f4becb1796b3077523)](https://www.codacy.com/app/nhnb/plugfy)
 -
 
 Plugfy verifies whether a .jar file can be loaded.
