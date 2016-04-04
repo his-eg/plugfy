@@ -55,7 +55,7 @@ public class ClassVerifier implements Verifier {
             URL underVerification = verificationContext.getUnderVerification();
             String prefix = underVerification.getFile();
             String nameWithoutPrefix = name.replace(prefix, "");
-            String className = nameWithoutPrefix.replace('/', '.').replaceAll("\\.class$", "");
+            String className = slash2dot(nameWithoutPrefix).replaceAll("\\.class$", "");
             Repository repository = this.context.getRepository();
             this.javaClass = repository.loadClass(className);
         } catch (final ClassNotFoundException e) {
@@ -67,6 +67,11 @@ public class ClassVerifier implements Verifier {
         this.analyzeClassSignature();
         this.analyzeFields();
         this.analyzeMethods();
+    }
+
+    
+    private String slash2dot(String path) {
+        return path.replace('/', '.').replace('\\', '.');
     }
 
     /**
