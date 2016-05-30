@@ -54,12 +54,13 @@ public class ClassVerifier implements Verifier {
     @Override
     public void verify(String name, final VerificationContext verificationContext) throws IOException {
         name = slash2dot(name);
-        if (!name.startsWith(".")) name = "." + name;
         this.context = verificationContext;
         try {
             URL underVerification = verificationContext.getUnderVerification();
             String prefix = underVerification.getFile();
             prefix = slash2dot(prefix);
+            if (prefix.startsWith(".")) prefix = prefix.substring(1);
+            if (name.startsWith(".")) name = name.substring(1);
             String nameWithoutPrefix = name.replace(prefix, "");
             String className = slash2dot(nameWithoutPrefix).replaceAll("\\.class$", "");
             Repository repository = this.context.getRepository();
