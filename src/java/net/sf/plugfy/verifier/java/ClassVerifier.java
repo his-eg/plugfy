@@ -37,8 +37,11 @@ import org.apache.bcel.util.Repository;
  */
 public class ClassVerifier implements Verifier {
     private VerificationContext context;
+
     private JavaClass javaClass;
+
     private ConstantPoolGen cpg;
+
     private ClassVisitor visitor;
 
     /**
@@ -49,11 +52,14 @@ public class ClassVerifier implements Verifier {
      * @throws IOException in case of an input/output error
      */
     @Override
-    public void verify(final String name, final VerificationContext verificationContext) throws IOException {
+    public void verify(String name, final VerificationContext verificationContext) throws IOException {
+        name = slash2dot(name);
+        if (!name.startsWith(".")) name = "." + name;
         this.context = verificationContext;
         try {
             URL underVerification = verificationContext.getUnderVerification();
             String prefix = underVerification.getFile();
+            prefix = slash2dot(prefix);
             String nameWithoutPrefix = name.replace(prefix, "");
             String className = slash2dot(nameWithoutPrefix).replaceAll("\\.class$", "");
             Repository repository = this.context.getRepository();
@@ -69,7 +75,7 @@ public class ClassVerifier implements Verifier {
         this.analyzeMethods();
     }
 
-    
+
     private String slash2dot(String path) {
         return path.replace('/', '.').replace('\\', '.');
     }
