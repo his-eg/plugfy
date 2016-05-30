@@ -46,24 +46,22 @@ public class ClassVerifier implements Verifier {
 
     /**
      * verifies the resource
-     * @param name filename
+     * @param rawName the name of the class file
      * @param verificationContext verification context
      *
      * @throws IOException in case of an input/output error
      */
     @Override
-    public void verify(String name, final VerificationContext verificationContext) throws IOException {
-        name = slash2dot(name);
+    public void verify(String rawName, final VerificationContext verificationContext) throws IOException {
         this.context = verificationContext;
+        URL underVerification = verificationContext.getUnderVerification();
+        String rawPrefix = underVerification.getFile();
+        String prefix = toNormalizedClassname(rawPrefix);
+        String name = toNormalizedClassname(rawName);
+        String nameWithoutPrefix = name.replace(prefix, "");
+        String className = nameWithoutPrefix.replaceAll("\\.class$", "");
+        Repository repository = this.context.getRepository();
         try {
-            URL underVerification = verificationContext.getUnderVerification();
-            String prefix = underVerification.getFile();
-            prefix = slash2dot(prefix);
-            if (prefix.startsWith(".")) prefix = prefix.substring(1);
-            if (name.startsWith(".")) name = name.substring(1);
-            String nameWithoutPrefix = name.replace(prefix, "");
-            String className = slash2dot(nameWithoutPrefix).replaceAll("\\.class$", "");
-            Repository repository = this.context.getRepository();
             this.javaClass = repository.loadClass(className);
         } catch (final ClassNotFoundException e) {
             throw new IOException(e);
@@ -77,9 +75,16 @@ public class ClassVerifier implements Verifier {
     }
 
 
-    private String slash2dot(String path) {
-        return path.replace('/', '.').replace('\\', '.');
+    private String toNormalizedClassname(String filename) {
+        String normalized = filename.replace('/', '.').replace('\\', '.');
+        if (normalized.startsWith(".")) {
+            // handle a small but annoying inconsistency on Windows
+            // ("/C:" vs. "C:" in paths)
+            normalized = normalized.substring(1);
+        }
+        return normalized;
     }
+
 
     /**
      * analyze the class signature
