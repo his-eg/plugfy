@@ -96,8 +96,8 @@ class ClassVisitor extends EmptyVisitor {
                 //System.out.println("msg = " + msg);
                 //System.out.println("className = " + className);
                 //System.out.println("cause = " + cause);
+                //cause.printStackTrace();
                 System.err.println("Class " + className + " could not be read. You might need to add it to the class path!");
-                cause.printStackTrace();
             } else {
                 // Found a ClassNotFoundExceptions from a previously unseen origin.
                 // For this we keep the old classname extraction approach and log all data for verification.
