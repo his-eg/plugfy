@@ -88,7 +88,7 @@ class ClassVisitor extends EmptyVisitor {
             Throwable cause = e.getCause();
             if (msg.startsWith(BCEL_CLASS_NOT_FOUND_EXCEPTION_START) && cause!=null && cause instanceof IOException) {
                 // ClassNotFoundException thrown by BCELs MemorySensitiveClassPathRepository.loadClass(String className)
-                // which is called inside findMethodRecursive() above. In that case the Exception message starts with
+                // or ClassPathRepository.loadClass(String className). In that case the Exception message starts with
                 // "Exception while looking for class " and has a wrapped in IOException.
                 final String msgPart1 = msg.substring(0, msg.indexOf(':'));
                 className = msgPart1.substring(msgPart1.lastIndexOf(' ')+1);
