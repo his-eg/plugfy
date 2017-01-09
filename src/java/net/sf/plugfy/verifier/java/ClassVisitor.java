@@ -12,6 +12,7 @@
  */
 package net.sf.plugfy.verifier.java;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import net.sf.plugfy.verifier.VerificationContext;
@@ -35,6 +36,8 @@ import org.apache.bcel.generic.TypedInstruction;
  */
 class ClassVisitor extends EmptyVisitor {
 
+    private static final String BCEL_CLASS_NOT_FOUND_EXCEPTION_START = "Exception while looking for class ";
+    
     private final JavaClass javaClass;
     private final ConstantPoolGen cpg;
     private final VerificationContext context;
@@ -79,8 +82,35 @@ class ClassVisitor extends EmptyVisitor {
                 this.context.getResult().add(JavaViolation.create(sourceType, targetClass, methodName));
             }
         } catch (final ClassNotFoundException e) {
+            // Derive the name of the class that could not be found:
+            // The ClassNotFoundException is typically thrown by BCELs MemorySensitiveClassPathRepository.loadClass(String className)
+            // which is called inside findMethodRecursive() above. In that case the Exception message starts with
+            // "Exception while looking for class " and has a wrapped in IOException.
+            String className;
             final String msg = e.getMessage();
-            final String className = msg.substring(0, msg.indexOf(' '));
+            Throwable cause = e.getCause();
+            if (msg.startsWith(BCEL_CLASS_NOT_FOUND_EXCEPTION_START) && cause!=null && cause instanceof IOException) {
+                // The old classname extraction style didn't work in this case (probably because of a BCEL update?)
+                final String msgPart1 = msg.substring(0, msg.indexOf(':'));
+                className = msgPart1.substring(msgPart1.lastIndexOf(' ')+1);
+                //System.out.println("msg = " + msg);
+                //System.out.println("className = " + className);
+                //System.out.println("cause = " + cause);
+                System.err.println("Class " + className + " could not be read. You might need to add it to the class path!");
+                cause.printStackTrace();
+            } else {
+                // Found a ClassNotFoundExceptions from a previously unseen origin.
+                // For this we keep the old classname extraction approach and log all data for verification.
+                className = msg.substring(0, msg.indexOf(' '));
+                System.out.println("Found ClassNotFoundException from unexpected origin!");
+                System.out.println("msg = " + msg);
+                System.out.println("className = " + className);
+                System.out.println("cause = " + cause);
+                if (cause != null) {
+                    cause.printStackTrace();
+                }
+            }
+
             this.context.getResult().add(JavaViolation.create(sourceType, className, null));
         }
     }
