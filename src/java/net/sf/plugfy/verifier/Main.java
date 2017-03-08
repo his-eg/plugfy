@@ -51,7 +51,7 @@ public class Main {
             System.out.println(context.toString());
             System.out.println("---------------------------------");
         }
-        System.out.println("Duration: " + (System.currentTimeMillis() - start));
+        System.out.println("Duration: " + (System.currentTimeMillis() - start) + " ms");
     }
 
 }
