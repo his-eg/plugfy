@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import net.sf.plugfy.verifier.container.JarVerifier;
+import net.sf.plugfy.verifier.violations.AbstractViolation;
 
 /**
  * verifies the dependencies
@@ -47,8 +48,17 @@ public class Main {
             final URL url = file.toURI().toURL();
             final VerificationContext context = new VerificationContext(null, Main.class.getClassLoader(), url);
             new JarVerifier().verify(url, context);
+            VerificationResult result = context.getResult();
+            int violationCount = result.getViolationCount();
             System.out.println("---------------------------------");
-            System.out.println(context.toString());
+            if (violationCount==0) {
+                System.out.println("No problems found");
+            } else {
+                System.out.println("Found " + violationCount + " issues:");
+                for (AbstractViolation violation : result) {
+                    System.out.println(violation.toString());
+                }
+            }
             System.out.println("---------------------------------");
         }
         System.out.println("Duration: " + (System.currentTimeMillis() - start) + " ms");

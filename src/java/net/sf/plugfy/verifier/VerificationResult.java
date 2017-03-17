@@ -36,14 +36,20 @@ public class VerificationResult implements Iterable<AbstractViolation> {
         this.results.add(result);
     }
 
-    @Override
-    public String toString() {
-        return this.results.toString();
+    /**
+     * @return number of violations that were found
+     */
+    public int getViolationCount() {
+        return results.size();
     }
-
+    
     @Override
     public Iterator<AbstractViolation> iterator() {
         return this.results.iterator();
     }
 
+    @Override
+    public String toString() {
+        return this.results.toString();
+    }
 }
