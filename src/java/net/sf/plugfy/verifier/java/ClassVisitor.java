@@ -96,7 +96,7 @@ class ClassVisitor extends EmptyVisitor {
                 // ClassNotFoundException thrown by BCELs ClassLoaderRepository.loadClass(String className)
                 className = msg.substring(0, msg.indexOf(' '));
             }
-            System.out.println("Class " + className + " could not be read. You might need to add it to the class path!");
+            //System.out.println("Class " + className + " could not be read. You might need to add it to the class path!");
             this.context.getResult().add(JavaViolation.create(sourceType, className, null));
         }
     }
