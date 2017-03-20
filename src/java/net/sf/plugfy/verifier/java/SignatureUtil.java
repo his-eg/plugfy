@@ -28,6 +28,8 @@ import org.apache.bcel.util.Repository;
  */
 class SignatureUtil {
 
+    private static final boolean DEBUG = false;
+    
     enum State {
         WAITING_FOR_TYPE_START,
         WAITING_FOR_TYPE_END,
@@ -84,48 +86,52 @@ class SignatureUtil {
         if (signature == null || signature.isEmpty()) {
             return;
         }
-        if (signature.charAt(0) == '(') {
-            checkSignatureDependencies(repository, result, signature.substring(1, signature.indexOf(')')), sourceType);
-            checkSignatureDependencies(repository, result, signature.substring(signature.indexOf(')') + 1, signature.length()), sourceType);
-            return;
-        }
+        
+        if (DEBUG) System.out.println("signature=" + signature);
 
-        State state = State.WAITING_FOR_TYPE_START;
+        // Parse signature...
+        // Some special cases:
+        // Ljava/lang/Iterable<Lcom/google/common/base/Predicate<TT;>;>;
+        // <UIVALUE:Ljava/lang/Object;MODELVALUE:Ljava/lang/Object;>Ljava/lang/Object;
+        // <MODELVALUE:Ljava/lang/Object;>Ljava/lang/Object;Lde/his/core/cm/exa/infrastructure/jsf/components/DropDownList<TMODELVALUE;TMODELVALUE;>;
+        // <T::Ljava/io/Serializable;>
+        
+        // Strategy:
+        // 1. Decompose signature into tokens at "<", ">", "(", ")" or ";".
+        //    Relevant tokens end with ";" -> we get the last one, too.
+        // 2. Handle type parameters cutting at last ":" (inclusive)
+        // 3. Remove array marks "[" at the start of tokens
+        // 4. Search for java type start indicated by "L"
+        //
+        // Trimming is not necessary because signatures do not contain spaces.
         int start = 0;
         for (int i = 0; i < signature.length(); i++) {
             final char chr = signature.charAt(i);
-            if (state == State.WAITING_FOR_TYPE_START) {
-                if (chr == 'L') {
-                    start = i + 1;
-                    state = State.WAITING_FOR_TYPE_END;
-                } else if (chr == 'T') {
-                    start = i + 1;
-                    state = State.WAITING_FOR_TYPEVAR_END;
-                } else if (chr == '<') {
-                    // handle <CHILD:Ljava/lang/String;> by looking for a ":"
-                    for (int j = i + 1; j < signature.length(); j++) {
-                        final char chr2 = signature.charAt(j);
-                        if (chr2 == ':') {
-                            start = i + 1;
-                            state = State.WAITING_FOR_TYPEVAR_END;
-                            break;
-                        } else if (chr2 == '<' || chr2 == '>' || chr2 == ';') {
-                            break;
-                        }
+            if (chr=='<' || chr=='>' || chr=='(' || chr==')' || chr==';') {
+                String token = signature.substring(start, i);
+                if (token.length()>0) {
+                    // handle <CHILD:Ljava/lang/String;> and <T::Ljava/io/Serializable;> looking for the last ":"
+                    final int colonIndex = token.lastIndexOf(':');
+                    if (colonIndex >= 0) {
+                        token = token.substring(colonIndex+1);
                     }
-                }
-            } else {
-                if (chr == '<' || chr == '>' || chr == ';' || chr == ':') {
-                    if (state ==  State.WAITING_FOR_TYPE_END) {
-                        final String type = signature.substring(start, i).replace('/', '.');
+                    if (token.charAt(0)=='[') {
+                        // array mark
+                        token = token.substring(1);
+                    }
+                    if (token.charAt(0)=='L') {
+                        // "L" marks the start of a java type.
+                        // This excludes type params, too, which are marked with "T"
+                        final String type = token.substring(1).replace('/', '.');
+                        if (DEBUG) System.out.println("   Found type " + type);
                         try {
                             repository.loadClass(type);
                         } catch (final ClassNotFoundException e) {
                             result.add(JavaViolation.create(sourceType, type, null));
                         }
                     }
-                    state = State.WAITING_FOR_TYPE_START;
                 }
+                start = i+1;
             }
         }
     }
