@@ -151,11 +151,16 @@ class ClassVisitor extends EmptyVisitor {
                 continue;
             }
 
+            // Check return type: Refinement is allowed for overriden methods.
             final Type declaredReturnType = method.getReturnType();
-
-            // refinement is allowed for overriden messages
             if (!declaredReturnType.equals(returnType)) {
-                if (!(declaredReturnType instanceof ReferenceType) || !((ReferenceType) declaredReturnType).isAssignmentCompatibleWith(returnType)) {
+                if (!(declaredReturnType instanceof ReferenceType)) {
+                    // basic return type -> no refinement possible -> since the names do not equal, they are incompatible
+                    continue;
+                }
+                // Refinement? E.g. declaredReturnType=String, expected returnType=Object would be ok
+                if (!((ReferenceType) declaredReturnType).isAssignmentCompatibleWith(returnType)) {
+                    // the return type of the method is not assignable to the expected returnType -> they are incompatible
                     continue;
                 }
             }
