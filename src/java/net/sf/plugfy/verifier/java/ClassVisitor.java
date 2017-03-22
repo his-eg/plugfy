@@ -158,7 +158,7 @@ class ClassVisitor extends EmptyVisitor {
                     // basic return type -> no refinement possible -> since the names do not equal, they are incompatible
                     continue;
                 }
-                // Refinement? E.g. declaredReturnType=String, expected returnType=Object would be ok
+                // Refinement? declaredReturnType (e.g. String) assignable to expected returnType (e.g. Object) would be ok
                 if (!((ReferenceType) declaredReturnType).isAssignmentCompatibleWith(returnType)) {
                     // the return type of the method is not assignable to the expected returnType -> they are incompatible
                     continue;
@@ -170,14 +170,18 @@ class ClassVisitor extends EmptyVisitor {
             if (declaredArgumentTypes.length != argumentTypes.length) {
                 continue;
             }
+            boolean allEqual = true;
             for (int i = 0; i < argumentTypes.length; i++) {
                 if (!argumentTypes[i].equals(declaredArgumentTypes[i])) {
-                    continue;
+                    // TODO: argumentTypes[i] assignable to declaredArgumentTypes[i] would be ok, too ?
+                    allEqual = false;
+                    break;
                 }
             }
-
-            // hey, all passed!
-            return true;
+            if (allEqual) {
+                // hey, all passed!
+                return true;
+            }
         }
         return false;
     }
