@@ -82,23 +82,29 @@ class ClassVisitor extends EmptyVisitor {
                 this.context.getResult().add(JavaViolation.create(sourceType, targetClass, methodName));
             }
         } catch (final ClassNotFoundException e) {
-            // Derive the name of the class that could not be found
-            String className;
-            final String msg = e.getMessage();
-            Throwable cause = e.getCause();
-            if (msg.startsWith(BCEL_CLASS_NOT_FOUND_EXCEPTION_START) && cause!=null && cause instanceof IOException) {
-                // ClassNotFoundException thrown by BCELs MemorySensitiveClassPathRepository.loadClass(String className)
-                // or ClassPathRepository.loadClass(String className). In that case the Exception message starts with
-                // "Exception while looking for class " and has a wrapped in IOException.
-                final String msgPart1 = msg.substring(0, msg.indexOf(':'));
-                className = msgPart1.substring(msgPart1.lastIndexOf(' ')+1);
-            } else {
-                // ClassNotFoundException thrown by BCELs ClassLoaderRepository.loadClass(String className)
-                className = msg.substring(0, msg.indexOf(' '));
-            }
+            String className = getClassNotFound(e);
             //System.out.println("Class " + className + " could not be read. You might need to add it to the class path!");
             this.context.getResult().add(JavaViolation.create(sourceType, className, null));
         }
+    }
+
+    /**
+     * Derive the name of the class that could not be found.
+     * @param e
+     * @return name of the class not found
+     */
+    private static String getClassNotFound(ClassNotFoundException e) {
+        final String msg = e.getMessage();
+        Throwable cause = e.getCause();
+        if (msg.startsWith(BCEL_CLASS_NOT_FOUND_EXCEPTION_START) && cause!=null && cause instanceof IOException) {
+            // ClassNotFoundException thrown by BCELs MemorySensitiveClassPathRepository.loadClass(String className)
+            // or ClassPathRepository.loadClass(String className). In that case the Exception message starts with
+            // "Exception while looking for class " and has a wrapped in IOException.
+            final String msgPart1 = msg.substring(0, msg.indexOf(':'));
+            return msgPart1.substring(msgPart1.lastIndexOf(' ')+1);
+        } 
+        // else: ClassNotFoundException thrown by BCELs ClassLoaderRepository.loadClass(String className)
+        return msg.substring(0, msg.indexOf(' '));
     }
 
     /**
