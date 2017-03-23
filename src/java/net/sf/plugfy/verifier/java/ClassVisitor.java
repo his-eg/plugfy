@@ -14,10 +14,12 @@ package net.sf.plugfy.verifier.java;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import net.sf.plugfy.verifier.VerificationContext;
 import net.sf.plugfy.verifier.violations.JavaViolation;
 
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ArrayType;
@@ -62,24 +64,46 @@ class ClassVisitor extends EmptyVisitor {
             return;
         }
 
-        final String targetClass = ((ObjectType) type).getClassName();
+        final String targetClassName = ((ObjectType) type).getClassName();
         final String methodName = invokeInstruction.getMethodName(this.cpg);
         final Type[] argumentTypes = invokeInstruction.getArgumentTypes(this.cpg);
         final Type returnType = invokeInstruction.getReturnType(this.cpg);
         final String sourceType = this.javaClass.getClassName();
-
+        
         if (methodName.equals("<clinit>")) {
             // the class initializer always exists
             return;
         }
-
+        
         try {
-            final JavaClass targetJavaClass = this.context.getRepository().loadClass(targetClass);
-            final boolean inheritance = targetJavaClass.equals(javaClass)
-                            || Arrays.asList(this.javaClass.getAllInterfaces()).contains(targetJavaClass)
-                            || Arrays.asList(this.javaClass.getSuperClasses()).contains(targetJavaClass);
-            if (!this.findMethodRecursive(targetClass, methodName, argumentTypes, returnType, inheritance)) {
-                this.context.getResult().add(JavaViolation.create(sourceType, targetClass, methodName));
+            // 1. check existence of target class exist
+            final JavaClass targetJavaClass = this.context.getRepository().loadClass(targetClassName);
+            // 2. check interfaces and superclasses of this class
+            final List<JavaClass> allInterfaces = Arrays.asList(this.javaClass.getAllInterfaces());
+            final List<JavaClass> allSuperClasses = Arrays.asList(this.javaClass.getSuperClasses());
+            // 3. if the return type is a class, check its existence
+            final String returnTypeClassName = (returnType instanceof ObjectType) ? ((ObjectType) returnType).getClassName() : null;
+            final JavaClass returnTypeJavaClass = (returnType instanceof ObjectType) ? this.context.getRepository().loadClass(returnTypeClassName) : null;
+
+            if (returnTypeJavaClass!=null && isLambdaExpression(targetClassName, returnTypeJavaClass)) {
+                // We did indeed find a lambda expression.
+                // Unfortunately, so far there seems to be no way to obtain the return type and argument types
+                // of the functional method from BCEL -> we can only check if a functional method with the given name exists.
+                // TODO: Determine argumentTypes and returnType of the functional method when BCEL is capable to do it
+                boolean lambdaInheritance = returnTypeJavaClass.equals(javaClass)
+                                || allInterfaces.contains(returnTypeJavaClass)
+                                || allSuperClasses.contains(returnTypeJavaClass);
+                if (!this.findMethodRecursive(returnTypeClassName, methodName, null, null, lambdaInheritance)) {
+                    this.context.getResult().add(JavaViolation.create(sourceType, returnTypeClassName, methodName));
+                }
+            } else {
+                // No lambda expression, do standard check
+                final boolean inheritance = targetJavaClass.equals(javaClass)
+                                || allInterfaces.contains(targetJavaClass)
+                                || allSuperClasses.contains(targetJavaClass);
+                if (!this.findMethodRecursive(targetClassName, methodName, argumentTypes, returnType, inheritance)) {
+                    this.context.getResult().add(JavaViolation.create(sourceType, targetClassName, methodName));
+                }
             }
         } catch (final ClassNotFoundException e) {
             String className = getClassNotFound(e);
@@ -89,11 +113,35 @@ class ClassVisitor extends EmptyVisitor {
     }
 
     /**
+     * Identify lambda expressions: these have 
+     * targetClassName = java.lang.Object
+     * methodName = the name of the functional method of the functional interface (e.g. "test" for Predicates)
+     * argumentTypes = additional arguments in the r.h.s. of the lambda expression (not those of the functional method!)
+     * returnType = the functional interface (e.g. Predicate); it is of class ObjectType
+     *
+     * @param targetClassName the name of the target class
+     * @param returnTypeJavaClass the return type java class, which would be the functional interface in a lambda expression 
+     * @return true if we found a lambda expression
+     */
+    private boolean isLambdaExpression(final String targetClassName, final JavaClass returnTypeJavaClass) {
+        if (targetClassName.equals("java.lang.Object") && returnTypeJavaClass!=null) {
+            AnnotationEntry[] annotations = returnTypeJavaClass.getAnnotationEntries();
+            for (AnnotationEntry annotation : annotations) {
+                //System.out.println("annotation = " + annotation + ", type = " + annotation.getAnnotationType() + ", shortString = " + annotation.toShortString());
+                if (annotation.toString().equals("@Ljava/lang/FunctionalInterface;")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
      * Derive the name of the class that could not be found.
      * @param e
      * @return name of the class not found
      */
-    private static String getClassNotFound(ClassNotFoundException e) {
+    private String getClassNotFound(ClassNotFoundException e) {
         final String msg = e.getMessage();
         Throwable cause = e.getCause();
         if (msg.startsWith(BCEL_CLASS_NOT_FOUND_EXCEPTION_START) && cause!=null && cause instanceof IOException) {
@@ -112,8 +160,8 @@ class ClassVisitor extends EmptyVisitor {
      *
      * @param className     name of class
      * @param methodName    name of method
-     * @param argumentTypes types of arguments
-     * @param returnType    return type
+     * @param argumentTypes types of arguments (not checked if null)
+     * @param returnType    return type (not checked if null)
      * @param isSubclass    is the caller a subclass
      * @return true, if the method was found, false otherwise
      * @throws ClassNotFoundException if a super class is not found
@@ -141,8 +189,8 @@ class ClassVisitor extends EmptyVisitor {
      *
      * @param targetJavaClass targetJavaClass
      * @param methodName    name of method
-     * @param argumentTypes types of arguments
-     * @param returnType    return type
+     * @param argumentTypes types of arguments (not checked if null)
+     * @param returnType    return type (not checked if null)
      * @param isSubClass    is the caller a subclass
      * @return true, if the method was found, false otherwise
      * @throws ClassNotFoundException if a super class is not found
@@ -157,37 +205,41 @@ class ClassVisitor extends EmptyVisitor {
                 continue;
             }
 
-            // Check return type: Refinement is allowed for overriden methods.
-            final Type declaredReturnType = method.getReturnType();
-            if (!declaredReturnType.equals(returnType)) {
-                if (!(declaredReturnType instanceof ReferenceType)) {
-                    // basic return type -> no refinement possible -> since the names do not equal, they are incompatible
+            if (returnType!=null) {
+                // Check return type: Refinement is allowed for overriden methods.
+                final Type declaredReturnType = method.getReturnType();
+                if (!declaredReturnType.equals(returnType)) {
+                    if (!(declaredReturnType instanceof ReferenceType)) {
+                        // basic return type -> no refinement possible -> since the names do not equal, they are incompatible
+                        continue;
+                    }
+                    // Refinement? declaredReturnType (e.g. String) assignable to expected returnType (e.g. Object) would be ok
+                    if (!((ReferenceType) declaredReturnType).isAssignmentCompatibleWith(returnType)) {
+                        // the return type of the method is not assignable to the expected returnType -> they are incompatible
+                        continue;
+                    }
+                }
+            }
+            
+            if (argumentTypes!=null) {
+                // check arguments
+                final Type[] declaredArgumentTypes = method.getArgumentTypes();
+                if (declaredArgumentTypes.length != argumentTypes.length) {
                     continue;
                 }
-                // Refinement? declaredReturnType (e.g. String) assignable to expected returnType (e.g. Object) would be ok
-                if (!((ReferenceType) declaredReturnType).isAssignmentCompatibleWith(returnType)) {
-                    // the return type of the method is not assignable to the expected returnType -> they are incompatible
-                    continue;
+                boolean allEqual = true;
+                for (int i = 0; i < argumentTypes.length; i++) {
+                    if (!argumentTypes[i].equals(declaredArgumentTypes[i])) {
+                        // TODO: argumentTypes[i] assignable to declaredArgumentTypes[i] would be ok, too ?
+                        allEqual = false;
+                        break;
+                    }
                 }
+                if (!allEqual) continue;
             }
-
-            // check arguments
-            final Type[] declaredArgumentTypes = method.getArgumentTypes();
-            if (declaredArgumentTypes.length != argumentTypes.length) {
-                continue;
-            }
-            boolean allEqual = true;
-            for (int i = 0; i < argumentTypes.length; i++) {
-                if (!argumentTypes[i].equals(declaredArgumentTypes[i])) {
-                    // TODO: argumentTypes[i] assignable to declaredArgumentTypes[i] would be ok, too ?
-                    allEqual = false;
-                    break;
-                }
-            }
-            if (allEqual) {
-                // hey, all passed!
-                return true;
-            }
+            
+            // hey, all passed!
+            return true;
         }
         return false;
     }
@@ -232,5 +284,4 @@ class ClassVisitor extends EmptyVisitor {
             SignatureUtil.checkSignatureDependencies(this.context.getRepository(), this.context.getResult(), type.getSignature(), this.javaClass.getClassName());
         }
     }
-
 }
