@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="plugfy" default="jar" xmlns:jacoco="antlib:org.jacoco.ant">
 
-	<property name="version" value="0.6" />
+	<property name="version" value="0.9" />
 
 	<!-- jacoco definitions -->
 	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
