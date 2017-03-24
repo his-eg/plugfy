@@ -30,19 +30,23 @@ import net.sf.plugfy.verifier.Verifier;
  */
 public class WebflowVerifier implements Verifier {
 
+    private static final boolean DEBUG = false;
+    
     @Override
     public void verify(String name, VerificationContext context) throws IOException {
+        URL url = null;
         try {
-            URL url = context.getClassLoader().getResource(name);
+            url = context.getClassLoader().getResource(name);
             SAXParserFactory parserFactory = SAXParserFactory.newInstance();
             SAXParser saxParser = parserFactory.newSAXParser();
             WebflowVerifierContentHandler contentHandler = new WebflowVerifierContentHandler(context, name);
             saxParser.parse(url.openStream(), contentHandler);
         } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            System.err.println("ERROR parsing URL " + url + ": " + e);
+            if (DEBUG) e.printStackTrace();
         } catch (SAXException e) {
-            e.printStackTrace();
+            System.err.println("ERROR parsing URL " + url + ": " + e);
+            if (DEBUG) e.printStackTrace();
         }
     }
-
 }
