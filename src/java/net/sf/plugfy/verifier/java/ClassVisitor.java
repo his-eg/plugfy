@@ -19,7 +19,6 @@ import java.util.List;
 import net.sf.plugfy.verifier.VerificationContext;
 import net.sf.plugfy.verifier.violations.JavaViolation;
 
-import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ArrayType;
@@ -39,6 +38,8 @@ import org.apache.bcel.generic.TypedInstruction;
 class ClassVisitor extends EmptyVisitor {
 
     private static final String BCEL_CLASS_NOT_FOUND_EXCEPTION_START = "Exception while looking for class ";
+    
+    private static final List<String> JAVA_LANG_OBJECT_METHODS_WITH_OBJECT_RETURN_TYPE = Arrays.asList("clone", "getClass", "toString");
     
     private final JavaClass javaClass;
     private final ConstantPoolGen cpg;
@@ -81,12 +82,22 @@ class ClassVisitor extends EmptyVisitor {
             // 2. check interfaces and superclasses of this class
             final List<JavaClass> allInterfaces = Arrays.asList(this.javaClass.getAllInterfaces());
             final List<JavaClass> allSuperClasses = Arrays.asList(this.javaClass.getSuperClasses());
-            // 3. if the return type is a class, check its existence
-            final String returnTypeClassName = (returnType instanceof ObjectType) ? ((ObjectType) returnType).getClassName() : null;
-            final JavaClass returnTypeJavaClass = (returnType instanceof ObjectType) ? this.context.getRepository().loadClass(returnTypeClassName) : null;
 
-            if (returnTypeJavaClass!=null && isLambdaExpression(targetClassName, returnTypeJavaClass)) {
-                // We did indeed find a lambda expression.
+            // Do we have a lambda expression? These are characterized by bcel as follows:
+            // * targetClassName = java.lang.Object
+            // * returnType is of class ObjectType and designates the functional interface (e.g. Predicate)
+            // * methodName = the name of the functional method of the functional interface (e.g. "test" for java.util.function.Predicate)
+            // * argumentTypes = additional arguments in the r.h.s. of the lambda expression (not those of the functional method!)
+            // Functional interfaces from java.* are annotated as @FunctionalInterface and we could identify them easily
+            // getting such annotations via returnTypeJavaClass.getAnnotationEntries().
+            // But since Guava functional interfaces do not have that annotation before guava-21.0, we need another test:
+            // The only standard methods of java.lang.Object that return objects instead of primitive types are
+            // Object clone(), Class<?> getClass() and String toString(). Any other cases should be lambda expressions.
+            
+            if (targetClassName.equals("java.lang.Object") && (returnType instanceof ObjectType) & !JAVA_LANG_OBJECT_METHODS_WITH_OBJECT_RETURN_TYPE.contains("methodName")) {
+                // Found lambda expression!
+                final String returnTypeClassName = ((ObjectType) returnType).getClassName();
+                final JavaClass returnTypeJavaClass = this.context.getRepository().loadClass(returnTypeClassName);
                 // Unfortunately, so far there seems to be no way to obtain the return type and argument types
                 // of the functional method from BCEL -> we can only check if a functional method with the given name exists.
                 // TODO: Determine argumentTypes and returnType of the functional method when BCEL is capable to do it
@@ -110,30 +121,6 @@ class ClassVisitor extends EmptyVisitor {
             //System.out.println("Class " + className + " could not be read. You might need to add it to the class path!");
             this.context.getResult().add(JavaViolation.create(sourceType, className, null));
         }
-    }
-
-    /**
-     * Identify lambda expressions: these have 
-     * targetClassName = java.lang.Object
-     * methodName = the name of the functional method of the functional interface (e.g. "test" for Predicates)
-     * argumentTypes = additional arguments in the r.h.s. of the lambda expression (not those of the functional method!)
-     * returnType = the functional interface (e.g. Predicate); it is of class ObjectType
-     *
-     * @param targetClassName the name of the target class
-     * @param returnTypeJavaClass the return type java class, which would be the functional interface in a lambda expression 
-     * @return true if we found a lambda expression
-     */
-    private boolean isLambdaExpression(final String targetClassName, final JavaClass returnTypeJavaClass) {
-        if (targetClassName.equals("java.lang.Object") && returnTypeJavaClass!=null) {
-            AnnotationEntry[] annotations = returnTypeJavaClass.getAnnotationEntries();
-            for (AnnotationEntry annotation : annotations) {
-                //System.out.println("annotation = " + annotation + ", type = " + annotation.getAnnotationType() + ", shortString = " + annotation.toShortString());
-                if (annotation.toString().equals("@Ljava/lang/FunctionalInterface;")) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
     
     /**
