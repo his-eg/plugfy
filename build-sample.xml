@@ -4,6 +4,12 @@
 	<property name="build" value="build" />
 	<property name="dist" value="sample" />
 	
+	<path id="compile-classpath">
+		<fileset dir="lib" erroronmissingdir="false">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
 	<target name="clean">
 		<delete failonerror="false">
 			<fileset dir="${build}/classes-sample" />
@@ -17,7 +23,9 @@
 	</target>
 
 	<target name="compile" depends="init">
-		<javac srcdir="src/sample" destdir="${build}/classes-sample" debug="on" includeantruntime="false" />
+		<javac srcdir="src/sample" destdir="${build}/classes-sample" debug="on" includeantruntime="false">
+			<classpath refid="compile-classpath" />
+		</javac>
 	</target>
 
 	<target name="jar" depends="compile" description="Sample Jar">
