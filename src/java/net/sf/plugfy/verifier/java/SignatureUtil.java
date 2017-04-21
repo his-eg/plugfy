@@ -91,17 +91,17 @@ class SignatureUtil {
 
         // Parse signature...
         // Some special cases:
-        // Ljava/lang/Iterable<Lcom/google/common/base/Predicate<TT;>;>;
+        // Ljava/lang/Iterable<Lcom/google/common/base/Predicate<TCHILD;>;>;
         // <UIVALUE:Ljava/lang/Object;MODELVALUE:Ljava/lang/Object;>Ljava/lang/Object;
         // <MODELVALUE:Ljava/lang/Object;>Ljava/lang/Object;Lde/his/core/cm/exa/infrastructure/jsf/components/DropDownList<TMODELVALUE;TMODELVALUE;>;
         // <T::Ljava/io/Serializable;>
-        
+        //
         // Strategy:
         // 1. Decompose signature into tokens at "<", ">", "(", ")" or ";".
-        //    Relevant tokens end with ";" -> we get the last one, too.
-        // 2. Handle type parameters cutting at last ":" (inclusive)
-        // 3. Remove array marks "[" at the start of tokens
-        // 4. Search for java type start indicated by "L"
+        //    Java object types are of the form "L<identifier>;" -> we get the last one, too.
+        // 2. Handle some type parameters cutting at last ":" (inclusive)
+        // 3. Skip primitive types "BCDFIJSZ" and array marker "["
+        // 4. Now we should have reached an "L" or a "T". We parse the former and ignore the latter.
         //
         // Trimming is not necessary because signatures do not contain spaces.
         int start = 0;
@@ -109,27 +109,26 @@ class SignatureUtil {
             final char chr = signature.charAt(i);
             if (chr=='<' || chr=='>' || chr=='(' || chr==')' || chr==';') {
                 String token = signature.substring(start, i);
-                if (token.length()>0) {
+                if (token.length() > 0) {
                     // handle <CHILD:Ljava/lang/String;> and <T::Ljava/io/Serializable;> looking for the last ":"
                     final int colonIndex = token.lastIndexOf(':');
-                    if (colonIndex >= 0) {
-                        token = token.substring(colonIndex+1);
+                    int tokenStart = (colonIndex > -1) ? colonIndex+1 : 0;
+                    // skip primitive types "BCDFIJSZ" and array marker "["
+                    // (see http://docs.oracle.com/javase/specs/jvms/se8/jvms8.pdf, p.77)
+                    while ("BCDFIJSZ[".indexOf(token.charAt(tokenStart)) > -1) {
+                        tokenStart++;
                     }
-                    if (token.charAt(0)=='[') {
-                        // array mark
-                        token = token.substring(1);
-                    }
-                    if (token.charAt(0)=='L') {
-                        // "L" marks the start of a java type.
-                        // This excludes type params, too, which are marked with "T"
-                        final String type = token.substring(1).replace('/', '.');
+                    // now we should have a type variable marker "T" or an object type marker "L"
+                    if (token.charAt(tokenStart) == 'L') {
+                        // class marker found
+                        final String type = token.substring(tokenStart+1).replace('/', '.');
                         if (DEBUG) System.out.println("   Found type " + type);
                         try {
                             repository.loadClass(type);
                         } catch (final ClassNotFoundException e) {
                             result.add(JavaViolation.create(sourceType, type, null));
                         }
-                    }
+                    } // else: type variables are ignored
                 }
                 start = i+1;
             }
