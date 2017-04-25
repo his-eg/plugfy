@@ -109,19 +109,20 @@ class SignatureUtil {
             final char chr = signature.charAt(i);
             if (chr=='<' || chr=='>' || chr=='(' || chr==')' || chr==';') {
                 String token = signature.substring(start, i);
-                if (token.length() > 0) {
+                int tokenLength = token.length();
+                if (tokenLength > 0) {
                     // handle <CHILD:Ljava/lang/String;> and <T::Ljava/io/Serializable;> looking for the last ":"
                     final int colonIndex = token.lastIndexOf(':');
-                    int tokenStart = (colonIndex > -1) ? colonIndex+1 : 0;
+                    int tokenIndex = (colonIndex > -1) ? colonIndex+1 : 0;
                     // skip primitive types "BCDFIJSZ" and array marker "["
                     // (see http://docs.oracle.com/javase/specs/jvms/se8/jvms8.pdf, p.77)
-                    while ("BCDFIJSZ[".indexOf(token.charAt(tokenStart)) > -1) {
-                        tokenStart++;
+                    while (tokenIndex<tokenLength && "BCDFIJSZ[".indexOf(token.charAt(tokenIndex)) > -1) {
+                        tokenIndex++;
                     }
                     // now we should have a type variable marker "T" or an object type marker "L"
-                    if (token.charAt(tokenStart) == 'L') {
+                    if (tokenIndex<tokenLength && token.charAt(tokenIndex) == 'L') {
                         // class marker found
-                        final String type = token.substring(tokenStart+1).replace('/', '.');
+                        final String type = token.substring(tokenIndex+1).replace('/', '.');
                         if (DEBUG) System.out.println("   Found type " + type);
                         try {
                             repository.loadClass(type);
