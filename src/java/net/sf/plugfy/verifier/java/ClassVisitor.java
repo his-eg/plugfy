@@ -16,9 +16,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import net.sf.plugfy.verifier.VerificationContext;
-import net.sf.plugfy.verifier.violations.JavaViolation;
-
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ArrayType;
@@ -30,6 +27,9 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
 
+import net.sf.plugfy.verifier.VerificationContext;
+import net.sf.plugfy.verifier.violations.JavaViolation;
+
 /**
  * visits instructions
  *
@@ -38,9 +38,9 @@ import org.apache.bcel.generic.TypedInstruction;
 class ClassVisitor extends EmptyVisitor {
 
     private static final String BCEL_CLASS_NOT_FOUND_EXCEPTION_START = "Exception while looking for class ";
-    
+
     private static final List<String> JAVA_LANG_OBJECT_METHODS_WITH_OBJECT_RETURN_TYPE = Arrays.asList("clone", "getClass", "toString");
-    
+
     private final JavaClass javaClass;
     private final ConstantPoolGen cpg;
     private final VerificationContext context;
@@ -70,12 +70,12 @@ class ClassVisitor extends EmptyVisitor {
         final Type[] argumentTypes = invokeInstruction.getArgumentTypes(this.cpg);
         final Type returnType = invokeInstruction.getReturnType(this.cpg);
         final String sourceType = this.javaClass.getClassName();
-        
+
         if (methodName.equals("<clinit>")) {
             // the class initializer always exists
             return;
         }
-        
+
         try {
             // 1. check existence of target class exist
             final JavaClass targetJavaClass = this.context.getRepository().loadClass(targetClassName);
@@ -93,8 +93,8 @@ class ClassVisitor extends EmptyVisitor {
             // But since Guava functional interfaces do not have that annotation before guava-21.0, we need another test:
             // The only standard methods of java.lang.Object that return objects instead of primitive types are
             // Object clone(), Class<?> getClass() and String toString(). Any other cases should be lambda expressions.
-            
-            if (targetClassName.equals("java.lang.Object") && (returnType instanceof ObjectType) & !JAVA_LANG_OBJECT_METHODS_WITH_OBJECT_RETURN_TYPE.contains("methodName")) {
+
+            if (targetClassName.equals("java.lang.Object") && (returnType instanceof ObjectType) && !JAVA_LANG_OBJECT_METHODS_WITH_OBJECT_RETURN_TYPE.contains("methodName")) {
                 // Found lambda expression!
                 final String returnTypeClassName = ((ObjectType) returnType).getClassName();
                 final JavaClass returnTypeJavaClass = this.context.getRepository().loadClass(returnTypeClassName);
@@ -104,6 +104,11 @@ class ClassVisitor extends EmptyVisitor {
                 boolean lambdaInheritance = returnTypeJavaClass.equals(javaClass)
                                 || allInterfaces.contains(returnTypeJavaClass)
                                 || allSuperClasses.contains(returnTypeJavaClass);
+
+                // Java 11 uses invokedynamic to call makeConcat​WithConstants
+                if (returnTypeClassName.equals("java.lang.String") && methodName.startsWith("makeConcat")) {
+                    return;
+                }
                 if (!this.findMethodRecursive(returnTypeClassName, methodName, null, null, lambdaInheritance)) {
                     this.context.getResult().add(JavaViolation.create(sourceType, returnTypeClassName, methodName));
                 }
@@ -122,7 +127,7 @@ class ClassVisitor extends EmptyVisitor {
             this.context.getResult().add(JavaViolation.create(sourceType, className, null));
         }
     }
-    
+
     /**
      * Derive the name of the class that could not be found.
      * @param e
@@ -137,7 +142,7 @@ class ClassVisitor extends EmptyVisitor {
             // "Exception while looking for class " and has a wrapped in IOException.
             final String msgPart1 = msg.substring(0, msg.indexOf(':'));
             return msgPart1.substring(msgPart1.lastIndexOf(' ')+1);
-        } 
+        }
         // else: ClassNotFoundException thrown by BCELs ClassLoaderRepository.loadClass(String className)
         return msg.substring(0, msg.indexOf(' '));
     }
@@ -207,7 +212,7 @@ class ClassVisitor extends EmptyVisitor {
                     }
                 }
             }
-            
+
             if (argumentTypes!=null) {
                 // check arguments
                 final Type[] declaredArgumentTypes = method.getArgumentTypes();
@@ -222,9 +227,11 @@ class ClassVisitor extends EmptyVisitor {
                         break;
                     }
                 }
-                if (!allEqual) continue;
+                if (!allEqual) {
+                    continue;
+                }
             }
-            
+
             // hey, all passed!
             return true;
         }
@@ -244,7 +251,7 @@ class ClassVisitor extends EmptyVisitor {
             return true;
         }
 
-        if (this.javaClass.equals(targetJavaClass)) {
+        if (isCommonOuterClass(this.javaClass, targetJavaClass)) {
             return true;
         }
 
@@ -258,6 +265,20 @@ class ClassVisitor extends EmptyVisitor {
         }
 
         return method.isProtected() && isSubClass;
+    }
+
+    private static boolean isCommonOuterClass(JavaClass class1, JavaClass class2) {
+        String classname1 = class1.getClassName();
+        String classname2 = class2.getClassName();
+        int pos = classname1.indexOf("$");
+        if (pos > -1) {
+            classname1 = classname1.substring(0, pos);
+        }
+        pos = classname2.indexOf("$");
+        if (pos > -1) {
+            classname2 = classname2.substring(0, pos);
+        }
+        return classname1.equals(classname2);
     }
 
     @Override
