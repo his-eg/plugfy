@@ -71,8 +71,7 @@ class ClassVisitor extends EmptyVisitor {
         final Type returnType = invokeInstruction.getReturnType(this.cpg);
         final String sourceType = this.javaClass.getClassName();
 
-        if (methodName.equals("<clinit>")) {
-            // the class initializer always exists
+        if (isMagicMethod(targetClassName, methodName, argumentTypes)) {
             return;
         }
 
@@ -126,6 +125,32 @@ class ClassVisitor extends EmptyVisitor {
             //System.out.println("Class " + className + " could not be read. You might need to add it to the class path!");
             this.context.getResult().add(JavaViolation.create(sourceType, className, null));
         }
+    }
+
+    /**
+     * is this a method that exists despite being invisible
+     *
+     * @param targetClassName name of target class
+     * @param methodName name of methods
+     * @param argumentTypes parameters of the method
+     */
+    private boolean isMagicMethod(final String targetClassName, final String methodName, final Type[] argumentTypes) {
+        // the class initializer always exists
+        if (methodName.equals("<clinit>")) {
+            return true;
+        }
+
+        // records invoke the magic method static hashCode(Object) and equals(Object, Object)
+        if (targetClassName.equals("java.lang.Object")) {
+            if (methodName.equals("equals") && argumentTypes.length == 2) {
+                return true;
+            }
+            if (methodName.equals("hashCode") && argumentTypes.length == 1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
